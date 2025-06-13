@@ -106,7 +106,7 @@ CORS(app, origins=["http://localhost:5173"])
 
 
 # Mongo Connection
-client = MongoClient(os.getenv("MONGO_URI"))
+client = MongoClient(os.getenv("MONGODBATLAS_URI"))
 db = client["AiInterview"]
 collection = db["users"]
 userResume = db["userResume"]
