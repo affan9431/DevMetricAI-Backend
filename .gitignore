@@ -1,0 +1,23 @@
+# Python environment
+venv/
+__pycache__/
+*.py[cod]
+
+# Environment variables
+.env
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Logs and IDE configs
+*.log
+.vscode/
+.idea/
+
+# If you're using Jupyter or notebooks
+.ipynb_checkpoints/
+
+# If using Flask/Django or static builds
+instance/
+*.sqlite3
