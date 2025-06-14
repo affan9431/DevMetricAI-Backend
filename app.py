@@ -31,7 +31,7 @@ from flask_session import Session
 
 current_time = datetime.now()
 
-port = int(os.getenv("PORT", 5000))  # Render sets PORT env var
+port = int(5000)  # Render sets PORT env var
 
 
 
