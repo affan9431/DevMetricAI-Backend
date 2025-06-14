@@ -31,6 +31,10 @@ from flask_session import Session
 
 current_time = datetime.now()
 
+port = int(os.getenv("PORT", 5000))  # Render sets PORT env var
+
+
+
 stripe_keys = {
     "secret_key": os.getenv("STRIPE_SECRET_KEY"),
     "publishable_key": os.getenv("STRIPE_PUBLIC_KEY"),
@@ -89,7 +93,7 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 
 app = Flask(__name__)
-
+app.run(host="0.0.0.0", port=port)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
 # Add this to use filesystem-based session storage
