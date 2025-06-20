@@ -105,7 +105,7 @@ Session(app)
 oauth = OAuth(app)
 
 
-CORS(app, origins=["http://localhost:5173"])
+CORS(app, origins=["http://localhost:5173", "https://devmetricai.netlify.app"])
 
 
 # Mongo Connection
