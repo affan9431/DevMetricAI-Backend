@@ -696,16 +696,3 @@ if __name__ == '__main__':
     app.run(host="0.0.0.0", port=port)
 
 
-#     {
-#   "user_id": "abc123",
-#   "email": "user@example.com",
-#   "plan": {
-#     "name": "grind_mode",
-#     "type": "subscription",
-#     "start_date": "2025-04-12T12:00:00Z",
-#     "status": "active"
-#     "end_date": "2025-05-12T12:00:00Z",
-#     "interviews_used": 0,
-#     "interviews_allowed": null  // null means unlimited
-#   }
-# }
