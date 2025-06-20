@@ -99,13 +99,16 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY")
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_PERMANENT'] = False
 
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+app.config['SESSION_COOKIE_SECURE'] = True  # Required for same-site None
+
 # This initializes the session management
 Session(app)
 
 oauth = OAuth(app)
 
 
-CORS(app, origins=["http://localhost:5173", "https://devmetricai.netlify.app"])
+CORS(app, supports_credentials=True, origins=["http://localhost:5173", "https://devmetricai.netlify.app"])
 
 
 # Mongo Connection
@@ -266,11 +269,11 @@ def authorize_github_login():
                 break
 
     if not email:
-        return redirect("http://localhost:5173/signin?error=github-email")  # 👈 redirect with error
+        return redirect("https://devmetricai.netlify.app/signin?error=github-email")  # 👈 redirect with error
 
     user = collection.find_one({"email": email})
     if not user:
-        return redirect("http://localhost:5173/signin?error=no-account")  # 👈 toast this error on frontend
+        return redirect("https://devmetricai.netlify.app/signin?error=no-account")  # 👈 toast this error on frontend
 
     exp_time = datetime.utcnow() + timedelta(days=90)
     exp_timestamp = int(exp_time.timestamp())
@@ -307,7 +310,7 @@ def authorize_github_signup():
                 break
 
     if not email:
-        return redirect("http://localhost:5173/signup?error=github-email")
+        return redirect("https://devmetricai.netlify.app/signup?error=github-email")
 
     user = collection.find_one({"email": email})
     if not user:
