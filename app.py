@@ -673,7 +673,13 @@ def update_profile():
         {"$set": {"name": updated_name, "role": updated_role, "picture": image_url}}
     )
 
-    return jsonify({"message": "Profile details updated successfully"})
+    exp_time = datetime.utcnow() + timedelta(days=90)
+    exp_timestamp = int(exp_time.timestamp())
+    token = jwt.encode({"name": updated_name, "email": email, "role": updated_role, "picture": image_url,
+                       "expiredAt": exp_timestamp}, os.getenv("JWT_SECRET_KEY"),
+                       algorithm="HS256",)
+
+    return jsonify({"message": "Profile details updated successfully", "token": token})
 
 
 @app.route("/api/get-data")
