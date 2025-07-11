@@ -34,7 +34,6 @@ current_time = datetime.now()
 port = int(os.environ.get("PORT", 5000))
 
 
-
 stripe_keys = {
     "secret_key": os.getenv("STRIPE_SECRET_KEY"),
     "publishable_key": os.getenv("STRIPE_PUBLIC_KEY"),
@@ -108,7 +107,8 @@ Session(app)
 oauth = OAuth(app)
 
 
-CORS(app, supports_credentials=True, origins=["http://localhost:5173", "https://devmetricai.netlify.app"])
+CORS(app, supports_credentials=True, origins=[
+     "http://localhost:5173", "https://devmetricai.netlify.app"])
 
 
 # Mongo Connection
@@ -269,11 +269,13 @@ def authorize_github_login():
                 break
 
     if not email:
-        return redirect("https://devmetricai.netlify.app/signin?error=github-email")  # 👈 redirect with error
+        # 👈 redirect with error
+        return redirect("https://devmetricai.netlify.app/signin?error=github-email")
 
     user = collection.find_one({"email": email})
     if not user:
-        return redirect("https://devmetricai.netlify.app/signin?error=no-account")  # 👈 toast this error on frontend
+        # 👈 toast this error on frontend
+        return redirect("https://devmetricai.netlify.app/signin?error=no-account")
 
     exp_time = datetime.utcnow() + timedelta(days=90)
     exp_timestamp = int(exp_time.timestamp())
@@ -335,7 +337,6 @@ def authorize_github_signup():
 
     frontend_url = os.getenv("FRONTEND_URL") or "http://localhost:5173"
     return redirect(f"{frontend_url}/oauth-callback?token={jwt_token}")
-
 
 
 @app.route(f"{USER_API}/signup", methods=["POST"])
@@ -665,10 +666,11 @@ def update_profile():
     updated_name = updated_data.get("name")
     updated_role = updated_data.get("role")
     email = updated_data.get("email")
+    image_url = updated_data.get("image")
 
     collection.update_one(
         {"email": email},
-        {"$set": {"name": updated_name, "role": updated_role}}
+        {"$set": {"name": updated_name, "role": updated_role, "picture": image_url}}
     )
 
     return jsonify({"message": "Profile details updated successfully"})
@@ -697,5 +699,3 @@ def contact():
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=port)
-
-
