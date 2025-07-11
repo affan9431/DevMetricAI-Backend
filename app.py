@@ -28,6 +28,9 @@ from authlib.integrations.flask_client import OAuth
 from urllib.parse import urlencode
 from flask_session import Session
 
+load_dotenv()  # Load .env file
+
+
 
 current_time = datetime.now()
 
@@ -84,7 +87,6 @@ DOMAIN = ""
 
 # Call library function here
 bcrypt = Bcrypt()
-load_dotenv()  # Load .env file
 
 
 if not os.path.exists(UPLOAD_FOLDER):
