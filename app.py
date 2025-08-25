@@ -31,7 +31,6 @@ from flask_session import Session
 load_dotenv()  # Load .env file
 
 
-
 current_time = datetime.now()
 
 port = int(os.environ.get("PORT", 5000))
@@ -563,8 +562,8 @@ def create_checkout_session():
 
         print(data.get("imageUrl"))
         checkout_session = stripe.checkout.Session.create(
-            success_url="http://localhost:5173/app/upload-resume?session_id={CHECKOUT_SESSION_ID}",
-            cancel_url="http://localhost:5173/",
+            success_url="https://devmetricai.netlify.app/app/upload-resume?session_id={CHECKOUT_SESSION_ID}",
+            cancel_url="https://devmetricai.netlify.app",
             customer_email=data.get("email"),
             payment_method_types=["card"],
             mode="subscription" if reccuringData in [
