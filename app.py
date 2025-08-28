@@ -711,5 +711,12 @@ def generate_aptitude_and_reasoning_questions():
     return jsonify({"message": "Questions generated successfully", "questions": response})
 
 
+@app.route("/api/total-marks-of-aptitude-and-reasoning", methods=['POST'])
+def total_marks():
+    data = request.json
+    totalMarks = data.get("totalMarks")
+    print(totalMarks)
+
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=port)
