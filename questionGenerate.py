@@ -203,7 +203,7 @@ def predict_user_strength_and_weakness(data):
     return response.text
 
 
-def generate_aptitude_reasoning():
+def generate_aptitude_and_reasoning_questions():
     response = client.models.generate_content(
         model="gemini-2.0-flash",
         contents=(

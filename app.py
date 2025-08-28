@@ -17,6 +17,7 @@ from languageList import skills_list
 from questionGenerate import generate_coding_question
 from questionGenerate import evaluate_user_code
 from questionGenerate import generate_interview_question as generate_faang_interview_question
+from questionGenerate import generate_aptitude_and_reasoning_questions as generate_faang_style_reasoning_questions
 from questionGenerate import predict_domain_based_on_skills
 from questionGenerate import predict_user_strength_and_weakness
 import re
@@ -706,7 +707,7 @@ def contact():
 
 @app.route("/api/generate-aptitude-and-reasoning-questions")
 def generate_aptitude_and_reasoning_questions():
-    response = generate_aptitude_and_reasoning_questions()
+    response = generate_faang_style_reasoning_questions()
     print("Response:", response)
     return jsonify({"message": "We recieved your message successfully!"})
 
