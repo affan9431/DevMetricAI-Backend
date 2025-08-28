@@ -708,8 +708,7 @@ def contact():
 @app.route("/api/generate-aptitude-and-reasoning-questions")
 def generate_aptitude_and_reasoning_questions():
     response = generate_faang_style_reasoning_questions()
-    print("Response:", response)
-    return jsonify({"message": "We recieved your message successfully!"})
+    return jsonify({"message": "Questions generated successfully", "questions": response})
 
 
 if __name__ == '__main__':
