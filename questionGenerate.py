@@ -28,6 +28,22 @@ problems = [
     },
 ]
 
+
+aptitude_problem = [
+    {
+        "id": 1,
+        "question": "If 5x = 20, what is the value of x?",
+        "options": ["2", "4", "5", "20"],
+        "answer": "4",
+    },
+    {
+        id: 2,
+        "question": "The average of 10, 20, 30 is?",
+        "options": ["15", "20", "25", "30"],
+        "answer": "20",
+    },
+]
+
 answer = {
     "score": "some_value",
     "feedback": "some_value",
@@ -183,5 +199,23 @@ def predict_user_strength_and_weakness(data):
         ]
         ```
         """
+    )
+    return response.text
+
+
+def generate_aptitude_reasoning():
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=(
+            "Generate 25 aptitude and reasoning questions ranging from easy, medium, to hard "
+            "at FAANG interview style. "
+            "Provide the questions strictly in JSON array format with this structure: "
+            "[{id, question, options, answer}]. "
+            "Each question must have exactly 4 options. "
+            "Among the 4 options: 2 should be clearly incorrect, and 2 should be very close to each other "
+            "so that the user gets confused between those 2. "
+            "The correct answer must be one of those 2 close options. "
+            "Do not include explanations, only the JSON array."
+        )
     )
     return response.text

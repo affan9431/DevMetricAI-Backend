@@ -704,5 +704,12 @@ def contact():
     return jsonify({"message": "We recieved your message successfully!"})
 
 
+@app.route("/api/generate-aptitude-and-reasoning-questions")
+def generate_aptitude_and_reasoning_questions():
+    response = generate_aptitude_and_reasoning_questions()
+    print("Response:", response)
+    return jsonify({"message": "We recieved your message successfully!"})
+
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=port)
