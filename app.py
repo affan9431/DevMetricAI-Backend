@@ -716,6 +716,7 @@ def total_marks():
     data = request.json
     totalMarks = data.get("totalMarks")
     print(totalMarks)
+    return jsonify({"message": "Marks received", "totalMarks": totalMarks}), 200
 
 
 if __name__ == '__main__':
