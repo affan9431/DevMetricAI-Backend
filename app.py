@@ -445,7 +445,7 @@ def review_codes():
     answer = evaluate_user_code(data)
 
     result = codeEvaluation.insert_one(
-        {'email': email, "role": role, 'code_review': answer, "interview_review": "", "created_at": current_time})
+        {'email': email, "role": role, 'code_review': answer, "reasoning_and_aptitude_review": "", "interview_review": "", "created_at": current_time})
 
     cuurID = result.inserted_id
     print(cuurID)
@@ -521,10 +521,6 @@ def get_interview_result():
             {"email": email}, {"_id": 0})]
         resultById = list(codeEvaluation.find(
             {"_id": codeEvaluationID}, {"_id": 0}))
-
-        print(len(result))
-
-        print(resultById)
 
         return jsonify({"result": resultById, "results": result})
 
@@ -714,8 +710,32 @@ def generate_aptitude_and_reasoning_questions():
 @app.route("/api/total-marks-of-aptitude-and-reasoning", methods=['POST'])
 def total_marks():
     data = request.json
+    email = request.headers.get("Email")
+
+    if not data:
+        return jsonify({"error": "No JSON data received"}), 400
+
     totalMarks = data.get("totalMarks")
-    print(totalMarks)
+
+    if totalMarks < 10:
+        overview = "Weak side – needs significant improvement."
+    elif totalMarks < 15:
+        overview = "Below average – keep practicing to improve."
+    elif totalMarks < 20:
+        overview = "Good – strong foundation, but can still improve."
+    elif 20 <= totalMarks <= 25:
+        overview = "Excellent – very strong reasoning and aptitude skills."
+    else:
+        overview = "Invalid marks received."
+
+    final_result = {
+        "overview": overview,
+        "totalMarks": totalMarks
+    }
+
+    codeEvaluation.update_one(
+        {'email': email}, {"$set": {"reasoning_and_aptitude_review": final_result, "created_at": current_time}})
+
     return jsonify({"message": "Marks received", "totalMarks": totalMarks}), 200
 
 
