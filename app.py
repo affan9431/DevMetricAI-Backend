@@ -457,6 +457,7 @@ def generate_interview_question():
     answer = request.json
     email = request.headers.get("Email")
     stopInterview = request.headers.get("StopInterview")
+    codeEvaluationID = request.headers.get("CodeEvaluationID")
 
     data = extractSkill.find_one({'email': email})
     skills = data['skills']
@@ -505,7 +506,7 @@ def generate_interview_question():
 
         # Update this code
         codeEvaluation.update_one(
-            {'email': email}, {"$set": {"interview_review": question, "created_at": current_time}})
+            {'_id': ObjectId(codeEvaluationID)}, {"$set": {"interview_review": question, "created_at": current_time}})
 
     return jsonify({"message": "Interview question generated successfully", "question": question})
 
@@ -711,6 +712,7 @@ def generate_aptitude_and_reasoning_questions():
 def total_marks():
     data = request.json
     email = request.headers.get("Email")
+    codeEvaluationID = request.headers.get("CodeEvaluationID")
 
     if not data:
         return jsonify({"error": "No JSON data received"}), 400
@@ -734,7 +736,7 @@ def total_marks():
     }
 
     codeEvaluation.update_one(
-        {'email': email}, {"$set": {"reasoning_and_aptitude_review": final_result, "created_at": current_time}})
+        {'_id': ObjectId(codeEvaluationID)}, {"$set": {"reasoning_and_aptitude_review": final_result, "created_at": current_time}})
 
     return jsonify({"message": "Marks received", "totalMarks": totalMarks}), 200
 
