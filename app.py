@@ -122,6 +122,7 @@ extractSkill = db["extractSkill"]
 codeEvaluation = db["codeEvaluation"]
 subscriptions = db["subscriptions"]
 contactData = db["contact"]
+reviewData = db["review"]
 
 google = oauth.register(
     name='google',
@@ -739,6 +740,18 @@ def total_marks():
         {'_id': ObjectId(codeEvaluationID)}, {"$set": {"reasoning_and_aptitude_review": final_result, "created_at": current_time}})
 
     return jsonify({"message": "Marks received", "totalMarks": totalMarks}), 200
+
+
+@app.route("/api/review", methods=["POST"])
+def review():
+    data = request.json
+    rating = data.get("rating")
+    reviewText = data.get("reviewText")
+
+    reviewData.insert_one(
+        {"rating": rating, "reviewText": reviewText, "createdAt": current_time})
+
+    return jsonify({"message": "Review submitted successfully!"}), 200
 
 
 if __name__ == '__main__':
