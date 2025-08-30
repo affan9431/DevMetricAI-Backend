@@ -82,7 +82,7 @@ def evaluate_user_code(allCode):
             f"    {{\n"
             f"      \"questionId\": <question_id>,\n"
             f"      \"questionTitle\": \"<title>\",\n"
-            f"      \"score\": <integer_out_of_10>,\n"
+            f"      \"score\": <integer_out_of_5>,\n"
             f"      \"feedback\": \"<detailed_feedback>\",\n"
             f"      \"capability\": \"<Beginner/Intermediate/Advanced>\",\n"
             f"      \"improvements\": \"<List improvements or optimizations>\",\n"
