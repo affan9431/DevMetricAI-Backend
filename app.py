@@ -764,6 +764,8 @@ def create_update_credits():
         creditsVal = data.get("credits", 0)
         history = data.get("history")
 
+        print("HISTORY:", history)
+
         if not email:
             return jsonify({"error": "Email is required"}), 400
 
