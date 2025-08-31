@@ -796,5 +796,24 @@ def create_update_credits():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/api/get-candidate-credits")
+def get_candidate_credits():
+    data = request.json
+    email = data.get("email")
+
+    if not email:
+        return jsonify({"error": "Email is required"}), 400
+
+    userCreditsData = userCredits.find_one({'email': email})
+
+    if not userCreditsData:
+        return jsonify({"error": "User not found"}), 404
+
+    # Convert ObjectId to string (or remove it if not needed)
+    userCreditsData["_id"] = str(userCreditsData["_id"])
+
+    return jsonify(userCreditsData), 200
+
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=port)
