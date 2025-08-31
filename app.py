@@ -796,7 +796,7 @@ def create_update_credits():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/api/get-candidate-credits")
+@app.route("/api/get-candidate-credits", methods=["POST"])
 def get_candidate_credits():
     data = request.json
     email = data.get("email")
