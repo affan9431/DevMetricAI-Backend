@@ -123,6 +123,7 @@ codeEvaluation = db["codeEvaluation"]
 subscriptions = db["subscriptions"]
 contactData = db["contact"]
 reviewData = db["review"]
+userCredits = db["userCredits"]
 
 google = oauth.register(
     name='google',
@@ -752,6 +753,45 @@ def review():
         {"rating": rating, "reviewText": reviewText, "createdAt": current_time})
 
     return jsonify({"message": "Review submitted successfully!"}), 200
+
+
+@app.route("/api/create-update-credits", methods=["POST"])
+def create_update_credits():
+    try:
+        data = request.json
+        name = data.get("name")
+        email = data.get("email")
+        creditsVal = data.get("credits", 0)
+        history = data.get("history")
+
+        if not email:
+            return jsonify({"error": "Email is required"}), 400
+
+        if creditsVal == 0:
+            return jsonify({"error": "Credits must be > 0"}), 400
+
+        result = userCredits.update_one(
+            {"email": email},
+            {
+
+                # only set on first insert
+                "$setOnInsert": {"email": email, "name": name},
+                "$inc": {"credits": creditsVal},
+                "$push": {"history": history}
+            },
+            upsert=True
+        )
+
+        response = {"message": "Credits updated successfully"}
+
+        if result.upserted_id:
+            response["message"] = "Credits created successfully"
+            response["id"] = str(result.upserted_id)
+
+        return jsonify(response), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == '__main__':
