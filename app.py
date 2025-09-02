@@ -447,7 +447,13 @@ def review_codes():
     answer = evaluate_user_code(data)
 
     result = codeEvaluation.insert_one(
-        {'email': email, "role": role, 'code_review': answer, "reasoning_and_aptitude_review": "", "interview_review": "", "created_at": current_time})
+        {"email": email,
+         "role": role,
+         "code_review": answer,
+         "reasoning_and_aptitude_review": "",
+         "interview_review": "",
+         "totalMarks": "",
+         "created_at": current_time})
 
     cuurID = result.inserted_id
     print(cuurID)
@@ -506,9 +512,20 @@ def generate_interview_question():
                             {"$set": {"plan.status": "inactive"}}
                         )
                 except Exception as e:
-                    print("Error parsing end_date:", e)                
+                    print("Error parsing end_date:", e)
+        doc = codeEvaluation.find_one({"_id": ObjectId(codeEvaluationID)})
 
-        # Update this code
+        if doc:
+            code_marks = doc.get("code_review", {}).get("totalMarks", 0)
+            aptitude_marks = doc.get(
+                "reasoning_and_aptitude_review", {}).get("totalMarks", 0)
+            interview_marks = doc.get(
+                "interview_review", {}).get("totalMarks", 0)
+
+            print("Code Review Marks:", code_marks)
+            print("Reasoning & Aptitude Marks:", aptitude_marks)
+            print("Interview Marks:", interview_marks)
+
         codeEvaluation.update_one(
             {'_id': ObjectId(codeEvaluationID)}, {"$set": {"interview_review": question, "created_at": current_time}})
 
