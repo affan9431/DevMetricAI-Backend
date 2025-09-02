@@ -90,9 +90,11 @@ def evaluate_user_code(allCode):
             f"      \"edgeCases\": \"<Mention edge cases that may break the code>\",\n"
             f"      \"alternativeApproach\": \"<Suggest a different or more optimized approach>\"\n"
             f"    }}\n"
-            f"  ]\n"
+            f"  ],\n"
+            f"  \"totalMarks\": <sum_of_all_scores>\n"
             f"}}\n"
             f"```\n"
+
             f"Ensure the output is a **valid JSON object**, not an array of objects."
         )
     )
@@ -153,7 +155,7 @@ def generate_interview_question(answer: str, extracted_skills: list, domain: str
         
         Format: 
         {{
-        "TotalMarks": X,  
+        "totalMarks": X,  
         "Feedback": "<Overall performance summary>"
         }}
         Ensure that X is a single integer score out of 50.
