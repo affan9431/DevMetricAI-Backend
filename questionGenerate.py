@@ -90,11 +90,10 @@ def evaluate_user_code(allCode):
             f"      \"edgeCases\": \"<Mention edge cases that may break the code>\",\n"
             f"      \"alternativeApproach\": \"<Suggest a different or more optimized approach>\"\n"
             f"    }}\n"
-            f"  ],\n"
-            f"  \"totalMarks\": <sum_of_all_scores>\n"
+            f"  ]\n"
             f"}}\n"
+            f"  \"totalMarks\": <sum_of_all_scores>\n"
             f"```\n"
-
             f"Ensure the output is a **valid JSON object**, not an array of objects."
         )
     )
@@ -145,20 +144,24 @@ def generate_interview_question(answer: str, extracted_skills: list, domain: str
     else:
         score_prompt = f"""
         Analyze the conversation history and evaluate the user's performance.
-        
+
         1. Assign marks to each answer, ensuring the total score does not exceed 50.
-        2. Consider depth, correctness, edge cases, and alternative approaches.
-        3. Provide overall feedback summarizing performance.
-        4. Return a single JSON object with total marks and final feedback.
-        
+        2. If the user gave no valid answers or stayed silent, still assign **1 mark** (minimum score).
+        3. Consider depth, correctness, edge cases, and alternative approaches.
+        4. Provide overall feedback summarizing performance.
+        5. Return a single JSON object with total marks and final feedback.
+
         Conversation History: {conversation_history}
-        
+
         Format: 
         {{
         "totalMarks": X,  
         "Feedback": "<Overall performance summary>"
         }}
-        Ensure that X is a single integer score out of 50.
+
+        Rules:
+        - X must always be an integer between 1 and 50 (never 0, never empty).
+        - Feedback must always be a non-empty string, even if the performance is very poor (e.g., "The user gave no valid answers. Needs significant improvement.").
         """
 
         response = client.models.generate_content(
