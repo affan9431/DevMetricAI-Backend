@@ -471,6 +471,8 @@ def generate_interview_question():
 
     print(stopInterview)
 
+    subscriptionData = None
+
     if (stopInterview == "false"):
 
         subscriptionData = subscriptions.find_one(
@@ -504,7 +506,7 @@ def generate_interview_question():
                             {"$set": {"plan.status": "inactive"}}
                         )
                 except Exception as e:
-                    print("Error parsing end_date:", e)
+                    print("Error parsing end_date:", e)                
 
         # Update this code
         codeEvaluation.update_one(
