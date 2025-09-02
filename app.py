@@ -523,7 +523,9 @@ def generate_interview_question():
             try:
                 # strip ```json ... ```
                 clean_str = json_str.strip("` \n")
+                print("clean", clean_str)
                 parsed = json.loads(clean_str.replace("json", "", 1))
+                print("parsed", parsed)
                 return parsed.get(key, 0)
             except Exception as e:
                 print("Parse error:", e)
