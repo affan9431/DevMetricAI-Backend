@@ -22,6 +22,7 @@ from questionGenerate import predict_domain_based_on_skills
 from questionGenerate import predict_user_strength_and_weakness
 import re
 from bson import ObjectId
+import json
 
 from datetime import datetime
 
@@ -516,11 +517,23 @@ def generate_interview_question():
         doc = codeEvaluation.find_one({"_id": ObjectId(codeEvaluationID)})
 
         if doc:
-            code_marks = doc.get("code_review", {}).get("totalMarks", 0)
+            def safe_extract(json_str, key):
+                if not json_str:
+                    return 0
+                try:
+                    # strip ```json ... ```
+                    clean_str = json_str.strip("` \n")
+                    parsed = json.loads(clean_str.replace("json", "", 1))
+                    return parsed.get(key, 0)
+                except Exception as e:
+                    print("Parse error:", e)
+                    return 0
+
+            code_marks = safe_extract(doc.get("code_review"), "totalMarks")
             aptitude_marks = doc.get(
                 "reasoning_and_aptitude_review", {}).get("totalMarks", 0)
-            interview_marks = doc.get(
-                "interview_review", {}).get("totalMarks", 0)
+            interview_marks = safe_extract(
+                doc.get("interview_review"), "totalMarks")
 
             print("Code Review Marks:", code_marks)
             print("Reasoning & Aptitude Marks:", aptitude_marks)
