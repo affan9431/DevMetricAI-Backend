@@ -546,6 +546,7 @@ def generate_interview_question():
         print("Reasoning & Aptitude Marks:", aptitude_marks)
         print("Interview Marks:", interview_marks)
         totalMarks = code_marks + aptitude_marks + interview_marks
+        print("total", totalMarks)
 
         codeEvaluation.update_one(
             {'_id': ObjectId(codeEvaluationID)}, {"$set": {"interview_review": question, "totalMarks": totalMarks, "created_at": current_time}})
