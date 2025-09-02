@@ -521,15 +521,14 @@ def generate_interview_question():
             if not json_str:
                 return 0
             try:
-                # strip ```json ... ```
+                # Case 1: already a dict
+                if isinstance(json_str, dict):
+                    return json_str.get(key, 0)
+
+                # Case 2: string with/without fences
                 clean_str = re.sub(
                     r"^```(?:json)?\s*|\s*```$", "", json_str.strip())
-
-                print("clean:", clean_str)  # debug
-
                 parsed = json.loads(clean_str)
-                print("parsed:", parsed)
-
                 return parsed.get(key, 0)
             except Exception as e:
                 print("Parse error:", e)
