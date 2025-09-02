@@ -515,6 +515,8 @@ def generate_interview_question():
                 except Exception as e:
                     print("Error parsing end_date:", e)
     doc = codeEvaluation.find_one({"_id": ObjectId(codeEvaluationID)})
+    print(doc)
+
 
     if doc:
         def safe_extract(json_str, key):
