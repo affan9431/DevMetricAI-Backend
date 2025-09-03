@@ -515,11 +515,11 @@ def generate_interview_question():
                 except Exception as e:
                     print("Error parsing end_date:", e)
 
-    # TODO: Calculate correct totalMarks                
+    # TODO: Calculate correct totalMarks
     doc = codeEvaluation.find_one({"_id": ObjectId(codeEvaluationID)})
 
-    print("code_review", doc.code_review.split("```json")[1])
-    print("interview_review", doc.interview_review.split("```json")[1])
+    print("code_review", doc["code_review"].split("```json")[1])
+    print("interview_review", doc["interview_review"].split("```json")[1])
 
     if doc:
         def safe_extract(json_str, key):

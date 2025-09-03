@@ -92,7 +92,7 @@ def evaluate_user_code(allCode):
             f"    }}\n"
             f"  ]\n"
             f"}}\n"
-            f"  \"totalMarks\": <sum_of_all_scores>\n"
+            f"  \"totalMarks\": <sum_of_all_scores>,\n"
             f"```\n"
             f"Ensure the output is a **valid JSON object**, not an array of objects."
         )
