@@ -516,43 +516,44 @@ def generate_interview_question():
                     print("Error parsing end_date:", e)
 
     # TODO: Calculate correct totalMarks
-    doc = codeEvaluation.find_one({"_id": ObjectId(codeEvaluationID)})
-
-    print("code_review", doc["code_review"].split("```json")[1])
-    print("interview_review", doc["interview_review"].split("```json")[1])
-
-    if doc:
-        def safe_extract(json_str, key):
-            if not json_str:
-                return 0
-            try:
-                # Case 1: already a dict
-                if isinstance(json_str, dict):
-                    return json_str.get(key, 0)
-
-                # Case 2: string with/without fences
-                clean_str = re.sub(
-                    r"^```(?:json)?\s*|\s*```$", "", json_str.strip())
-                parsed = json.loads(clean_str)
-                return parsed.get(key, 0)
-            except Exception as e:
-                print("Parse error:", e)
-                return 0
-
-        code_marks = safe_extract(doc.get("code_review"), "totalMarks")
-        aptitude_marks = doc.get(
-            "reasoning_and_aptitude_review", {}).get("totalMarks", 0)
-        interview_marks = safe_extract(
-            doc.get("interview_review"), "totalMarks")
-
-        print("Code Review Marks:", code_marks)
-        print("Reasoning & Aptitude Marks:", aptitude_marks)
-        print("Interview Marks:", interview_marks)
-        totalMarks = code_marks + aptitude_marks + interview_marks
-        print("total", totalMarks)
 
         codeEvaluation.update_one(
-            {'_id': ObjectId(codeEvaluationID)}, {"$set": {"interview_review": question, "totalMarks": totalMarks, "created_at": current_time}})
+            {'_id': ObjectId(codeEvaluationID)}, {"$set": {"interview_review": question, "created_at": current_time}})
+
+        doc = codeEvaluation.find_one({"_id": ObjectId(codeEvaluationID)})
+
+        if doc:
+            def safe_extract(json_str, key):
+                if not json_str:
+                    return 0
+                try:
+                    # Case 1: already a dict
+                    if isinstance(json_str, dict):
+                        return json_str.get(key, 0)
+
+                    # Case 2: string with/without fences
+                    clean_str = re.sub(
+                        r"^```(?:json)?\s*|\s*```$", "", json_str.strip())
+                    parsed = json.loads(clean_str)
+                    return parsed.get(key, 0)
+                except Exception as e:
+                    print("Parse error:", e)
+                    return 0
+
+            code_marks = safe_extract(doc.get("code_review"), "totalMarks")
+            aptitude_marks = doc.get(
+                "reasoning_and_aptitude_review", {}).get("totalMarks", 0)
+            interview_marks = safe_extract(
+                doc.get("interview_review"), "totalMarks")
+
+            print("Code Review Marks:", code_marks)
+            print("Reasoning & Aptitude Marks:", aptitude_marks)
+            print("Interview Marks:", interview_marks)
+            totalMarks = code_marks + aptitude_marks + interview_marks
+            print("total", totalMarks)
+
+            codeEvaluation.update_one(
+                {'_id': ObjectId(codeEvaluationID)}, {"$set": {"totalMarks": totalMarks, "created_at": current_time}})
 
     return jsonify({"message": "Interview question generated successfully", "question": question})
 
