@@ -62,7 +62,7 @@ def generate_coding_question():
 
 def evaluate_user_code(allCode):
     response = client.models.generate_content(
-        model="gemini-2.0-flash",
+        model="gemini-2.5-flash",
         contents=(
             f"Evaluate the following code snippet thoroughly based on:\n"
             f"- **Correctness** (Does it function as expected?)\n"
@@ -128,7 +128,7 @@ def generate_interview_question(answer: str, extracted_skills: list, domain: str
 
         # Generate response using Gemini API
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-2.5-flash",
             contents=prompt
         )
 
@@ -165,7 +165,7 @@ def generate_interview_question(answer: str, extracted_skills: list, domain: str
         """
 
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-2.5-flash",
             contents=score_prompt
         )
 
@@ -174,7 +174,7 @@ def generate_interview_question(answer: str, extracted_skills: list, domain: str
 
 def predict_domain_based_on_skills(skills):
     response = client.models.generate_content(
-        model="gemini-2.0-flash",
+        model="gemini-2.5-flash",
         contents=f"Predict the domain of a software engineer based on the following skills: {skills} and return in one word like Full Stack web developer, Machine Laerning Developer and so on."
     )
     return response.text
@@ -210,7 +210,7 @@ def predict_user_strength_and_weakness(data):
 
 def generate_aptitude_and_reasoning_questions():
     response = client.models.generate_content(
-        model="gemini-2.0-flash",
+        model="gemini-2.5-flash",
         contents=(
             "Generate 25 aptitude and reasoning questions ranging from easy, medium, to hard "
             "at FAANG interview style. "
