@@ -377,7 +377,7 @@ def signup():
     }
 
     collection.insert_one(userData)
-    
+
     return {"success": True}, 201
 
 
@@ -440,9 +440,9 @@ def upload_resume():
     # we have to store extracted_skill and domain in db
     extractSkill.insert_one(
         {"email": email, "skills": EXTRACTED_SKILLS, "domain": DOMAIN, "extracted_projects": extracted_projects})
-    
+
     collection.update_one(
-        {"email": email,}, {"$set": {"skills": EXTRACTED_SKILLS, "created_at": current_time}})
+        {"email": email, }, {"$set": {"skills": EXTRACTED_SKILLS, "created_at": current_time}})
 
     question = generate_coding_question()
     os.remove(filepath)
@@ -723,10 +723,13 @@ def update_profile():
     updated_role = updated_data.get("role")
     email = updated_data.get("email")
     image_url = updated_data.get("image")
+    updated_bio = updated_data.get("bio")
+    updated_location = updated_data.get("location")
 
     collection.update_one(
         {"email": email},
-        {"$set": {"name": updated_name, "role": updated_role, "picture": image_url}}
+        {"$set": {"name": updated_name, "role": updated_role,
+                  "picture": image_url, "bio": updated_bio, "location": updated_location}}
     )
 
     exp_time = datetime.utcnow() + timedelta(days=90)
