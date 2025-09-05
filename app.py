@@ -179,7 +179,8 @@ def signup_google():
 
 @app.route('/authorize/google/login')
 def authorize_google_login():
-    frontend_url = os.getenv("FRONTEND_URL") or "http://localhost:5173"
+    # prod_frontend_url = os.getenv("FRONTEND_URL")
+    dev_frontend_url = "http://localhost:5173"
     token = google.authorize_access_token()
     resp = google.get('userinfo')
     user_info = resp.json()
@@ -189,7 +190,7 @@ def authorize_google_login():
     user = collection.find_one({"email": email})
     if not user:
         error_params = urlencode({"error": "no_account"})
-        return redirect(f"{frontend_url}/signin?{error_params}")
+        return redirect(f"{dev_frontend_url}/signin?{error_params}")
 
     exp_time = datetime.utcnow() + timedelta(days=90)
     exp_timestamp = int(exp_time.timestamp())
@@ -203,7 +204,7 @@ def authorize_google_login():
     }, os.getenv("JWT_SECRET_KEY"), algorithm="HS256")
 
     params = urlencode({"token": jwt_token})
-    return redirect(f"{frontend_url}/oauth-callback?{params}")
+    return redirect(f"{dev_frontend_url}/oauth-callback?{params}")
 
 
 @app.route('/authorize/google/signup')
@@ -238,9 +239,10 @@ def authorize_google_signup():
         "expiredAt": exp_timestamp
     }, os.getenv("JWT_SECRET_KEY"), algorithm="HS256")
 
-    frontend_url = os.getenv("FRONTEND_URL") or "http://localhost:5173"
+    # prod_frontend_url = os.getenv("FRONTEND_URL")
+    dev_frontend_url = "http://localhost:5173"
     params = urlencode({"token": jwt_token})
-    return redirect(f"{frontend_url}/oauth-callback?{params}")
+    return redirect(f"{dev_frontend_url}/oauth-callback?{params}")
 
 
 @app.route("/login/github")
@@ -352,6 +354,8 @@ def signup():
     email = data.get("email")
     password = data.get("password")
     role = data.get("role")
+    location = data.get("location")
+    yearOfExperiences = data.get("yearOfExperiences")
 
     if not name or not email or not password or not role:
         return {"error": "No data provided"}, 400
@@ -364,17 +368,17 @@ def signup():
         "role": role,
         "password": hashPassword,
         "auth_type": "credentials",
-        "picture": "", }
+        "picture": "",
+        "location": location,
+        "yearOfExperiences": yearOfExperiences,
+        "bio": "",
+        "socialLinks": [],
+        "skills": []
+    }
 
     collection.insert_one(userData)
-
-    exp_time = datetime.utcnow() + timedelta(days=90)
-    exp_timestamp = int(exp_time.timestamp())
-
-    token = jwt.encode({"name": name, "email": email, "role": role, "auth_type": "credentials", "picture": "",
-                       "expiredAt": exp_timestamp}, os.getenv("JWT_SECRET_KEY"),
-                       algorithm="HS256",)
-    return {"success": True, "token": token}, 201
+    
+    return {"success": True}, 201
 
 
 @app.route(f"{USER_API}/login", methods=["POST"])
@@ -396,6 +400,8 @@ def login():
     exp_timestamp = int(exp_time.timestamp())
 
     token = jwt.encode({"name": user["name"], "email": email, "role": user["role"],
+                        "location": user["location"], "yearOfExperiences": user["yearOfExperiences"], "bio": user["bio"],
+                        "socialLinks": user["socialLinks"],
                        "expiredAt": exp_timestamp}, os.getenv("JWT_SECRET_KEY"),
                        algorithm="HS256",)
 
@@ -434,6 +440,10 @@ def upload_resume():
     # we have to store extracted_skill and domain in db
     extractSkill.insert_one(
         {"email": email, "skills": EXTRACTED_SKILLS, "domain": DOMAIN, "extracted_projects": extracted_projects})
+    
+    collection.update_one(
+        {"email": email,}, {"$set": {"skills": EXTRACTED_SKILLS, "created_at": current_time}})
+
     question = generate_coding_question()
     os.remove(filepath)
 
