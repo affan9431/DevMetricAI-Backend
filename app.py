@@ -735,6 +735,7 @@ def update_profile():
     exp_time = datetime.utcnow() + timedelta(days=90)
     exp_timestamp = int(exp_time.timestamp())
     token = jwt.encode({"name": updated_name, "email": email, "role": updated_role, "picture": image_url,
+                        "bio": updated_bio, "location": updated_location,
                        "expiredAt": exp_timestamp}, os.getenv("JWT_SECRET_KEY"),
                        algorithm="HS256",)
 
