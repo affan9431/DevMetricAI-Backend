@@ -55,7 +55,9 @@ text = ["some_text"]
 
 def generate_coding_question():
     response = client.models.generate_content(
-        model="gemini-2.0-flash", contents=f"Generate five coding questions for DSA, including hard, medium, and easy questions at FAANG interview level and give questions in the form {problems} but don't include this question this is just a example all 5 questions are new and match the level of FAANG coding questions."
+        model="gemini-2.5-pro", contents=f"""Generate 5 new FAANG-level DSA coding questions(easy, medium, hard).
+        Return JSON like this structure: {problems},
+        but do NOT repeat these exact questions. Only create new ones."""
     )
     return response.text
 
@@ -128,7 +130,7 @@ def generate_interview_question(answer: str, extracted_skills: list, domain: str
 
         # Generate response using Gemini API
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-2.5-pro",
             contents=prompt
         )
 
@@ -182,7 +184,7 @@ def predict_domain_based_on_skills(skills):
 
 def predict_user_strength_and_weakness(data):
     response = client.models.generate_content(
-        model="gemini-2.0-flash",
+        model="gemini-2.5-flash",
         contents=f"""
         Analyze the following user data: {data}. Identify exactly three strengths and three weaknesses based on coding scores, interview performance, and other relevant factors.
 
@@ -210,7 +212,7 @@ def predict_user_strength_and_weakness(data):
 
 def generate_aptitude_and_reasoning_questions():
     response = client.models.generate_content(
-        model="gemini-2.5-flash",
+        model="gemini-2.5-flash-lite",
         contents=(
             "Generate 25 aptitude and reasoning questions ranging from easy, medium, to hard "
             "at FAANG interview style. "
@@ -224,7 +226,3 @@ def generate_aptitude_and_reasoning_questions():
         )
     )
     return response.text
-
-
-
-

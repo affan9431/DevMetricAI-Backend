@@ -874,5 +874,41 @@ def get_candidate_credits():
     return jsonify(userCreditsData), 200
 
 
+@app.route('/api/get-leaderboard-data')
+def get_leaderboard_data():
+    pipeline = [
+        {
+            "$lookup": {
+                "from": "codeEvaluation",
+                "localField": "email",
+                "foreignField": "email",
+                "as": "marksRecords"
+            }
+        },
+        {
+            "$addFields": {
+                "highestMarks": { "$max": "$marksRecords.totalMarks" },
+                "interviewCount": { "$size": "$marksRecords" }
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "name": 1,
+                "email": 1,
+                "picture": 1,
+                "location": 1,
+                "highestMarks": 1,
+                "interviewCount": 1
+            }
+        },
+        {
+            "$sort": { "highestMarks": -1 }  # top scorers first
+        }
+    ]
+
+    leaderboard_data = list(collection.aggregate(pipeline))
+    return jsonify(leaderboard_data)
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=port)
