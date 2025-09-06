@@ -233,7 +233,7 @@ import os
 # Initialize OpenRouter client
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("DEEPSEEK_API_KEY"),  # replace with your actual API key
+    api_key=os.getenv("OPENAI_API_KEY"),  # replace with your actual API key
 )
 
 # Example data
