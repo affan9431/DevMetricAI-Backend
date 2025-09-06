@@ -887,8 +887,8 @@ def get_leaderboard_data():
         },
         {
             "$addFields": {
-                "highestMarks": { "$max": "$marksRecords.totalMarks" },
-                "interviewCount": { "$size": "$marksRecords" }
+                "highestMarks": {"$max": "$marksRecords.totalMarks"},
+                "interviewCount": {"$size": "$marksRecords"}
             }
         },
         {
@@ -903,12 +903,13 @@ def get_leaderboard_data():
             }
         },
         {
-            "$sort": { "highestMarks": -1 }  # top scorers first
+            "$sort": {"highestMarks": -1}  # top scorers first
         }
     ]
 
     leaderboard_data = list(collection.aggregate(pipeline))
-    return jsonify(leaderboard_data)
+    return jsonify({"success": True, "leaderboardData": leaderboard_data})
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=port)
