@@ -1,242 +1,8 @@
-# from typing import List, Dict, Tuple
-# from google import genai
-
-# client = genai.Client(api_key="AIzaSyC8jGdhFJy91Gq8U-dyRQXgdLqTAj-MRFI")
-
-# problems = [
-#     {
-#         "id": 1,
-#         "title": "Two Sum",
-#         "description": "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
-#         "detailedDescription": "You may assume that each input would have exactly one solution, and you may not use the same element twice. You can return the answer in any order.",
-#         "examples": [
-#             {"input": "nums = [2,7,11,15], target = 9", "output": "[0,1]"},
-#             {"input": "nums = [3,2,4], target = 6", "output": "[1,2]"},
-#         ],
-#     },
-#     {
-#         "id": 2,
-#         "title": "Reverse String",
-#         "description": "Write a function that reverses a string. The input string is given as an array of characters s.",
-#         "detailedDescription": "Do not allocate extra space for another array. You must do this by modifying the input array in-place with O(1) extra memory.",
-#         "examples": [
-#             {"input": 's = ["h","e","l","l","o"]',
-#                 "output": '["o","l","l","e","h"]'},
-#             {"input": 's = ["H","a","n","n","a","h"]',
-#                 "output": '["h","a","n","n","a","H"]'},
-#         ],
-#     },
-# ]
-
-
-# aptitude_problem = [
-#     {
-#         "id": 1,
-#         "question": "If 5x = 20, what is the value of x?",
-#         "options": ["2", "4", "5", "20"],
-#         "answer": "4",
-#     },
-#     {
-#         id: 2,
-#         "question": "The average of 10, 20, 30 is?",
-#         "options": ["15", "20", "25", "30"],
-#         "answer": "20",
-#     },
-# ]
-
-# answer = {
-#     "score": "some_value",
-#     "feedback": "some_value",
-#     "capability": "some_value"
-# }
-
-# text = ["some_text"]
-
-
-# def generate_coding_question():
-#     response = client.models.generate_content(
-#         model="gemini-2.0-flash", contents=f"Generate five coding questions for DSA, including hard, medium, and easy questions at FAANG interview level and give questions in the form {problems} but don't include this question this is just a example all 5 questions are new and match the level of FAANG coding questions."
-#     )
-#     return response.text
-
-
-# def evaluate_user_code(allCode):
-#     response = client.models.generate_content(
-#         model="gemini-2.5-flash",
-#         contents=(
-#             f"Evaluate the following code snippet thoroughly based on:\n"
-#             f"- **Correctness** (Does it function as expected?)\n"
-#             f"- **Efficiency** (Are there unnecessary computations? Can it be optimized?)\n"
-#             f"- **Best Practices** (Does it follow clean coding standards, readability, and maintainability?)\n"
-#             f"- **Edge Cases** (Are there scenarios where the code might fail or behave unexpectedly?)\n"
-#             f"- **Error Handling** (Are there cases where the code throws errors? How can they be fixed?)\n"
-#             f"- **Alternative Approaches** (Are there better ways to solve the problem?)\n\n"
-
-#             f"### **User's Code:**\n\n```javascript\n{allCode}\n```\n\n"
-
-#             f"#### **Response Format:**\n"
-#             f"Return a **valid JSON object** with the following structure:\n"
-#             f"```json\n"
-#             f"{{\n"
-#             f"  \"evaluations\": [\n"
-#             f"    {{\n"
-#             f"      \"questionId\": <question_id>,\n"
-#             f"      \"questionTitle\": \"<title>\",\n"
-#             f"      \"score\": <integer_out_of_5>,\n"
-#             f"      \"feedback\": \"<detailed_feedback>\",\n"
-#             f"      \"capability\": \"<Beginner/Intermediate/Advanced>\",\n"
-#             f"      \"improvements\": \"<List improvements or optimizations>\",\n"
-#             f"      \"potentialErrors\": \"<List scenarios where this code might throw errors>\",\n"
-#             f"      \"edgeCases\": \"<Mention edge cases that may break the code>\",\n"
-#             f"      \"alternativeApproach\": \"<Suggest a different or more optimized approach>\"\n"
-#             f"    }}\n"
-#             f"  ]\n"
-#             f"}}\n"
-#             f"  \"totalMarks\": <sum_of_all_scores>,\n"
-#             f"```\n"
-#             f"Ensure the output is a **valid JSON object**, not an array of objects."
-#         )
-#     )
-#     return response.text
-
-
-# # Maintain conversation history as a global variable or database storage
-# conversation_history = []
-
-
-# def generate_interview_question(answer: str, extracted_skills: list, domain: str, project: str, stopInterview) -> str:
-#     global conversation_history
-
-#     if stopInterview == "true":
-#         prompt = f"""Generate a FAANG-level technical interview question considering:
-#         1. User's skills: {extracted_skills}
-#         2. Previous conversation context (most recent first): {conversation_history[-3:]}
-#         3. Their latest answer: "{answer}"
-#         4. Domain: {domain}
-#         5. Project {project}
-
-#         Follow these rules:
-#         - Start with introduction questions if the conversation is just beginning.
-#         - Then move to easy technical questions based on their skills.
-#         - Gradually increase difficulty based on their responses and skill level.
-#         - If the user gives a strong technical answer, ask a deeper follow-up on implementation, edge cases, or alternative approaches.
-#         - Never repeat questions.
-#         - Prioritize topics related to {extracted_skills[-5:]}.
-#         - Keep questions under 2 sentences.
-#         - Ask questions from their project as well.
-#         - Format: [optional brief reaction] [question]"""
-
-#         # Generate response using Gemini API
-#         response = client.models.generate_content(
-#             model="gemini-2.5-flash",
-#             contents=prompt
-#         )
-
-#         generated_question = response.text
-
-#         # Update conversation history
-#         conversation_history.append({
-#             'user_answer': answer,
-#             'generated_question': generated_question
-#         })
-
-#         return generated_question
-#     else:
-#         score_prompt = f"""
-#         Analyze the conversation history and evaluate the user's performance.
-
-#         1. Assign marks to each answer, ensuring the total score does not exceed 50.
-#         2. If the user gave no valid answers or stayed silent, still assign **1 mark** (minimum score).
-#         3. Consider depth, correctness, edge cases, and alternative approaches.
-#         4. Provide overall feedback summarizing performance.
-#         5. Return a single JSON object with total marks and final feedback.
-
-#         Conversation History: {conversation_history}
-
-#         Format:
-#         {{
-#         "totalMarks": X,
-#         "Feedback": "<Overall performance summary>"
-#         }}
-
-#         Rules:
-#         - X must always be an integer between 1 and 50 (never 0, never empty).
-#         - Feedback must always be a non-empty string, even if the performance is very poor (e.g., "The user gave no valid answers. Needs significant improvement.").
-#         """
-
-#         response = client.models.generate_content(
-#             model="gemini-2.5-flash",
-#             contents=score_prompt
-#         )
-
-#         return response.text
-
-
-# def predict_domain_based_on_skills(skills):
-#     response = client.models.generate_content(
-#         model="gemini-2.5-flash",
-#         contents=f"Predict the domain of a software engineer based on the following skills: {skills} and return in one word like Full Stack web developer, Machine Laerning Developer and so on."
-#     )
-#     return response.text
-
-
-# def predict_user_strength_and_weakness(data):
-#     response = client.models.generate_content(
-#         model="gemini-2.0-flash",
-#         contents=f"""
-#         Analyze the following user data: {data}. Identify exactly three strengths and three weaknesses based on coding scores, interview performance, and other relevant factors.
-
-#         Return the response in JavaScript array format with concise statements, similar to "Great at problem-solving questions" or "Struggles with system design questions."
-
-#         ```js
-#         [
-#           "✔️ Great at problem-solving questions",
-#           "✔️ Strong logical reasoning skills",
-#           "✔️ Confident in data structures & algorithms"
-#         ]
-#         ```
-
-#         ```js
-#         [
-#           "❌ Struggles with system design questions",
-#           "❌ Needs improvement in behavioral answers",
-#           "❌ Sometimes lacks structured responses"
-#         ]
-#         ```
-#         """
-#     )
-#     return response.text
-
-
-# def generate_aptitude_and_reasoning_questions():
-#     response = client.models.generate_content(
-#         model="gemini-2.5-flash",
-#         contents=(
-#             "Generate 25 aptitude and reasoning questions ranging from easy, medium, to hard "
-#             "at FAANG interview style. "
-#             "Provide the questions strictly in JSON array format with this structure: "
-#             "[{id, question, options, answer}]. "
-#             "Each question must have exactly 4 options. "
-#             "Among the 4 options: 2 should be clearly incorrect, and 2 should be very close to each other "
-#             "so that the user gets confused between those 2. "
-#             "The correct answer must be one of those 2 close options. "
-#             "Do not include explanations, only the JSON array."
-#         )
-#     )
-#     return response.text
-
-
 from typing import List, Dict, Tuple
-from openai import OpenAI
-import os
+from google import genai
 
-# Initialize OpenRouter client
-client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENAI_API_KEY"),  # replace with your actual API key
-)
+client = genai.Client(api_key="AIzaSyC8jGdhFJy91Gq8U-dyRQXgdLqTAj-MRFI")
 
-# Example data
 problems = [
     {
         "id": 1,
@@ -247,8 +13,21 @@ problems = [
             {"input": "nums = [2,7,11,15], target = 9", "output": "[0,1]"},
             {"input": "nums = [3,2,4], target = 6", "output": "[1,2]"},
         ],
-    }
+    },
+    {
+        "id": 2,
+        "title": "Reverse String",
+        "description": "Write a function that reverses a string. The input string is given as an array of characters s.",
+        "detailedDescription": "Do not allocate extra space for another array. You must do this by modifying the input array in-place with O(1) extra memory.",
+        "examples": [
+            {"input": 's = ["h","e","l","l","o"]',
+                "output": '["o","l","l","e","h"]'},
+            {"input": 's = ["H","a","n","n","a","h"]',
+                "output": '["h","a","n","n","a","H"]'},
+        ],
+    },
 ]
+
 
 aptitude_problem = [
     {
@@ -256,132 +35,196 @@ aptitude_problem = [
         "question": "If 5x = 20, what is the value of x?",
         "options": ["2", "4", "5", "20"],
         "answer": "4",
-    }
+    },
+    {
+        id: 2,
+        "question": "The average of 10, 20, 30 is?",
+        "options": ["15", "20", "25", "30"],
+        "answer": "20",
+    },
 ]
 
-conversation_history = []
+answer = {
+    "score": "some_value",
+    "feedback": "some_value",
+    "capability": "some_value"
+}
+
+text = ["some_text"]
 
 
 def generate_coding_question():
-    completion = client.chat.completions.create(
-        model="deepseek/deepseek-r1-0528:free",
-        messages=[
-            {
-                "role": "user",
-                "content": f"Generate five coding questions for DSA, including hard, medium, and easy questions at FAANG interview level and give questions in the form {problems}. They should all be new and not include this example."
-            }
-        ],
+    response = client.models.generate_content(
+        model="gemini-2.0-flash", contents=f"Generate five coding questions for DSA, including hard, medium, and easy questions at FAANG interview level and give questions in the form {problems} but don't include this question this is just a example all 5 questions are new and match the level of FAANG coding questions."
     )
-    return completion.choices[0].message.content
+    return response.text
 
 
-def evaluate_user_code(allCode: str):
-    completion = client.chat.completions.create(
-        model="deepseek/deepseek-r1-0528:free",
-        messages=[
-            {
-                "role": "user",
-                "content": (
-                    f"Evaluate the following code thoroughly based on correctness, efficiency, best practices, edge cases, error handling, and alternative approaches.\n\n"
-                    f"### User's Code:\n```javascript\n{allCode}\n```\n\n"
-                    f"Return a valid JSON object with fields evaluations, score, feedback, capability, improvements, potentialErrors, edgeCases, and alternativeApproach."
-                )
-            }
-        ],
+def evaluate_user_code(allCode):
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=(
+            f"Evaluate the following code snippet thoroughly based on:\n"
+            f"- **Correctness** (Does it function as expected?)\n"
+            f"- **Efficiency** (Are there unnecessary computations? Can it be optimized?)\n"
+            f"- **Best Practices** (Does it follow clean coding standards, readability, and maintainability?)\n"
+            f"- **Edge Cases** (Are there scenarios where the code might fail or behave unexpectedly?)\n"
+            f"- **Error Handling** (Are there cases where the code throws errors? How can they be fixed?)\n"
+            f"- **Alternative Approaches** (Are there better ways to solve the problem?)\n\n"
+
+            f"### **User's Code:**\n\n```javascript\n{allCode}\n```\n\n"
+
+            f"#### **Response Format:**\n"
+            f"Return a **valid JSON object** with the following structure:\n"
+            f"```json\n"
+            f"{{\n"
+            f"  \"evaluations\": [\n"
+            f"    {{\n"
+            f"      \"questionId\": <question_id>,\n"
+            f"      \"questionTitle\": \"<title>\",\n"
+            f"      \"score\": <integer_out_of_5>,\n"
+            f"      \"feedback\": \"<detailed_feedback>\",\n"
+            f"      \"capability\": \"<Beginner/Intermediate/Advanced>\",\n"
+            f"      \"improvements\": \"<List improvements or optimizations>\",\n"
+            f"      \"potentialErrors\": \"<List scenarios where this code might throw errors>\",\n"
+            f"      \"edgeCases\": \"<Mention edge cases that may break the code>\",\n"
+            f"      \"alternativeApproach\": \"<Suggest a different or more optimized approach>\"\n"
+            f"    }}\n"
+            f"  ]\n"
+            f"}}\n"
+            f"  \"totalMarks\": <sum_of_all_scores>,\n"
+            f"```\n"
+            f"Ensure the output is a **valid JSON object**, not an array of objects."
+        )
     )
-    return completion.choices[0].message.content
+    return response.text
 
 
-def generate_interview_question(answer: str, extracted_skills: list, domain: str, project: str, stopInterview: str):
+# Maintain conversation history as a global variable or database storage
+conversation_history = []
+
+
+def generate_interview_question(answer: str, extracted_skills: list, domain: str, project: str, stopInterview) -> str:
     global conversation_history
 
     if stopInterview == "true":
-        prompt = f"""
-        Generate a FAANG-level technical interview question considering:
+        prompt = f"""Generate a FAANG-level technical interview question considering:
         1. User's skills: {extracted_skills}
-        2. Previous conversation context: {conversation_history[-3:]}
+        2. Previous conversation context (most recent first): {conversation_history[-3:]}
         3. Their latest answer: "{answer}"
         4. Domain: {domain}
-        5. Project: {project}
+        5. Project {project}
 
-        Rules:
-        - Start with intro if beginning, then easy, then harder.
-        - Deep follow-ups if strong answers.
-        - Prioritize {extracted_skills[-5:]}.
-        - Keep under 2 sentences.
-        """
+        Follow these rules:
+        - Start with introduction questions if the conversation is just beginning.
+        - Then move to easy technical questions based on their skills.
+        - Gradually increase difficulty based on their responses and skill level.
+        - If the user gives a strong technical answer, ask a deeper follow-up on implementation, edge cases, or alternative approaches.
+        - Never repeat questions.
+        - Prioritize topics related to {extracted_skills[-5:]}.
+        - Keep questions under 2 sentences.
+        - Ask questions from their project as well.
+        - Format: [optional brief reaction] [question]"""
 
-        completion = client.chat.completions.create(
-            model="deepseek/deepseek-r1-0528:free",
-            messages=[{"role": "user", "content": prompt}],
+        # Generate response using Gemini API
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt
         )
-        question = completion.choices[0].message.content
-        conversation_history.append(
-            {"user_answer": answer, "generated_question": question})
-        return question
+
+        generated_question = response.text
+
+        # Update conversation history
+        conversation_history.append({
+            'user_answer': answer,
+            'generated_question': generated_question
+        })
+
+        return generated_question
     else:
         score_prompt = f"""
-        Analyze conversation history and evaluate performance.
+        Analyze the conversation history and evaluate the user's performance.
 
-        - Assign marks to each answer, total <= 50, min 1.
-        - Give JSON: {{"totalMarks": X, "Feedback": "<summary>"}}
+        1. Assign marks to each answer, ensuring the total score does not exceed 50.
+        2. If the user gave no valid answers or stayed silent, still assign **1 mark** (minimum score).
+        3. Consider depth, correctness, edge cases, and alternative approaches.
+        4. Provide overall feedback summarizing performance.
+        5. Return a single JSON object with total marks and final feedback.
 
-        Conversation: {conversation_history}
+        Conversation History: {conversation_history}
+
+        Format:
+        {{
+        "totalMarks": X,
+        "Feedback": "<Overall performance summary>"
+        }}
+
+        Rules:
+        - X must always be an integer between 1 and 50 (never 0, never empty).
+        - Feedback must always be a non-empty string, even if the performance is very poor (e.g., "The user gave no valid answers. Needs significant improvement.").
         """
-        completion = client.chat.completions.create(
-            model="deepseek/deepseek-r1-0528:free",
-            messages=[{"role": "user", "content": score_prompt}],
+
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=score_prompt
         )
-        return completion.choices[0].message.content
+
+        return response.text
 
 
 def predict_domain_based_on_skills(skills):
-    completion = client.chat.completions.create(
-        model="deepseek/deepseek-r1-0528:free",
-        messages=[
-            {
-                "role": "user",
-                "content": f"Predict the domain of a software engineer with skills {skills}. Return in one phrase like 'Full Stack Web Developer' or 'Machine Learning Engineer'."
-            }
-        ],
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=f"Predict the domain of a software engineer based on the following skills: {skills} and return in one word like Full Stack web developer, Machine Laerning Developer and so on."
     )
-    return completion.choices[0].message.content
+    return response.text
 
 
 def predict_user_strength_and_weakness(data):
-    completion = client.chat.completions.create(
-        model="deepseek/deepseek-r1-0528:free",
-        messages=[
-            {
-                "role": "user",
-                "content": f"""
-                Analyze this user data: {data}.
-                Identify 3 strengths and 3 weaknesses.
-                Return as two JS arrays with concise statements, one for strengths, one for weaknesses.
-                """
-            }
-        ],
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=f"""
+        Analyze the following user data: {data}. Identify exactly three strengths and three weaknesses based on coding scores, interview performance, and other relevant factors.
+
+        Return the response in JavaScript array format with concise statements, similar to "Great at problem-solving questions" or "Struggles with system design questions."
+
+        ```js
+        [
+          "✔️ Great at problem-solving questions",
+          "✔️ Strong logical reasoning skills",
+          "✔️ Confident in data structures & algorithms"
+        ]
+        ```
+
+        ```js
+        [
+          "❌ Struggles with system design questions",
+          "❌ Needs improvement in behavioral answers",
+          "❌ Sometimes lacks structured responses"
+        ]
+        ```
+        """
     )
-    return completion.choices[0].message.content
+    return response.text
 
 
 def generate_aptitude_and_reasoning_questions():
-    completion = client.chat.completions.create(
-        model="deepseek/deepseek-r1-0528:free",
-        messages=[
-            {
-                "role": "user",
-                "content": (
-                    "Generate 25 aptitude and reasoning questions FAANG style. "
-                    "Return as JSON array [{id, question, options, answer}]. "
-                    "Each must have 4 options, 2 obviously wrong, 2 close. Correct = one of close ones. No explanations."
-                )
-            }
-        ],
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=(
+            "Generate 25 aptitude and reasoning questions ranging from easy, medium, to hard "
+            "at FAANG interview style. "
+            "Provide the questions strictly in JSON array format with this structure: "
+            "[{id, question, options, answer}]. "
+            "Each question must have exactly 4 options. "
+            "Among the 4 options: 2 should be clearly incorrect, and 2 should be very close to each other "
+            "so that the user gets confused between those 2. "
+            "The correct answer must be one of those 2 close options. "
+            "Do not include explanations, only the JSON array."
+        )
     )
-    return completion.choices[0].message.content
+    return response.text
 
 
-# Example usage
-if __name__ == "__main__":
-    print(generate_coding_question())
+
+
