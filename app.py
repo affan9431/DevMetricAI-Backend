@@ -403,7 +403,7 @@ def login():
 
     token = jwt.encode({"name": user["name"], "email": email, "role": user["role"],
                         "location": user["location"], "yearOfExperiences": user["yearOfExperiences"], "bio": user["bio"],
-                        "socialLinks": user["socialLinks", "preferredLocation": user["preferredLocation"]],
+                        "socialLinks": user["socialLinks"], "preferredLocation": user["preferredLocation"],
                        "expiredAt": exp_timestamp}, os.getenv("JWT_SECRET_KEY"),
                        algorithm="HS256",)
 
