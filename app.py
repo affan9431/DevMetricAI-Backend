@@ -203,7 +203,7 @@ def authorize_google_login():
         "expiredAt": exp_timestamp
     }, os.getenv("JWT_SECRET_KEY"), algorithm="HS256")
 
-    params = urlencode({"token": jwt_token})
+    params = urlencode({"login_token": jwt_token})
     return redirect(f"{dev_frontend_url}/oauth-callback?{params}")
 
 
