@@ -200,7 +200,12 @@ def authorize_google_login():
         "email": user.get("email"),
         "role": user.get("role"),
         "picture": user.get("picture"),
-        "expiredAt": exp_timestamp
+        "location": user.get("location"),
+        "yearOfExperiences": user.get("yearOfExperiences"),
+        "bio": user.get("bio"),
+        "socialLinks": user.get("socialLinks"),
+        "preferredLocation": user.get("preferredLocation"),
+        "exp": exp_timestamp  # ✅ standard JWT expiration claim
     }, os.getenv("JWT_SECRET_KEY"), algorithm="HS256")
 
     params = urlencode({"login_token": jwt_token})
