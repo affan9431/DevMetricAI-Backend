@@ -277,7 +277,8 @@ def complete_profile():
         return jsonify({"status": False, "message": "User not found"}), 404
 
     # ✅ Set expiry timestamp
-    exp_timestamp = datetime.datetime.utcnow() + datetime.timedelta(hours=2)
+    exp_time = datetime.utcnow() + timedelta(days=90)
+    exp_timestamp = int(exp_time.timestamp())
 
     # ✅ Create JWT with updated user info
     jwt_token = jwt.encode({
@@ -290,7 +291,7 @@ def complete_profile():
         "bio": user.get("bio"),
         "socialLinks": user.get("socialLinks"),
         "preferredLocation": user.get("preferredLocation"),
-        "expiredAt": exp_timestamp.isoformat()
+        "expiredAt": exp_timestamp
     }, os.getenv("JWT_SECRET_KEY"), algorithm="HS256")
 
     # ✅ Return response
