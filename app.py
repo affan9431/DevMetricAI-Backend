@@ -249,6 +249,58 @@ def authorize_google_signup():
     return redirect(f"{dev_frontend_url}/oauth-callback?{params}")
 
 
+@app.route("/api/complete-profile", methods=["POST"])
+def complete_profile():
+    data = request.json
+
+    email = data.get("email")
+    role = data.get("role")
+    location = data.get("location")
+    yearOfExperiences = data.get("yearOfExperiences")
+    preferredLocation = data.get("preferredLocation")
+
+    # ✅ Update the user document
+    collection.update_one(
+        {"email": email},
+        {"$set": {
+            "role": role,
+            "location": location,
+            "yearOfExperiences": yearOfExperiences,
+            "preferredLocation": preferredLocation
+        }}
+    )
+
+    # ✅ Fetch the updated user from DB
+    user = collection.find_one({"email": email})
+
+    if not user:
+        return jsonify({"status": False, "message": "User not found"}), 404
+
+    # ✅ Set expiry timestamp
+    exp_timestamp = datetime.datetime.utcnow() + datetime.timedelta(hours=2)
+
+    # ✅ Create JWT with updated user info
+    jwt_token = jwt.encode({
+        "name": user.get("name"),
+        "email": user.get("email"),
+        "picture": user.get("picture"),
+        "role": user.get("role"),
+        "location": user.get("location"),
+        "yearOfExperiences": user.get("yearOfExperiences"),
+        "bio": user.get("bio"),
+        "socialLinks": user.get("socialLinks"),
+        "preferredLocation": user.get("preferredLocation"),
+        "expiredAt": exp_timestamp.isoformat()
+    }, os.getenv("JWT_SECRET_KEY"), algorithm="HS256")
+
+    # ✅ Return response
+    return jsonify({
+        "status": True,
+        "message": "Profile updated successfully",
+        "token": jwt_token
+    }), 200
+
+
 @app.route("/login/github")
 def login_github():
     redirect_uri = url_for("authorize_github_login", _external=True)
