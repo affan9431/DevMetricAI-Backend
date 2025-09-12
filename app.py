@@ -356,6 +356,7 @@ def signup():
     role = data.get("role")
     location = data.get("location")
     yearOfExperiences = data.get("yearOfExperiences")
+    preferredLocation = data.get("preferredLocation")
 
     if not name or not email or not password or not role:
         return {"error": "No data provided"}, 400
@@ -370,6 +371,7 @@ def signup():
         "auth_type": "credentials",
         "picture": "",
         "location": location,
+        "preferredLocation": preferredLocation,
         "yearOfExperiences": yearOfExperiences,
         "bio": "",
         "socialLinks": [],
@@ -401,7 +403,7 @@ def login():
 
     token = jwt.encode({"name": user["name"], "email": email, "role": user["role"],
                         "location": user["location"], "yearOfExperiences": user["yearOfExperiences"], "bio": user["bio"],
-                        "socialLinks": user["socialLinks"],
+                        "socialLinks": user["socialLinks", "preferredLocation": user["preferredLocation"]],
                        "expiredAt": exp_timestamp}, os.getenv("JWT_SECRET_KEY"),
                        algorithm="HS256",)
 
