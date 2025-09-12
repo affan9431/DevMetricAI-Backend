@@ -216,16 +216,21 @@ def authorize_google_signup():
     name = user_info.get("name")
     email = user_info.get("email")
     picture = user_info.get("picture")
-    role = "user"
 
     user = collection.find_one({"email": email})
     if not user:
         collection.insert_one({
             "name": name,
             "email": email,
-            "role": role,
+            "role": "",
             "auth_type": "google",
-            "picture": picture
+            "picture": picture,
+            "location": "",
+            "preferredLocation": "",
+            "yearOfExperiences": "",
+            "bio": "",
+            "socialLinks": [],
+            "skills": []
         })
 
     exp_time = datetime.utcnow() + timedelta(days=90)
@@ -234,7 +239,6 @@ def authorize_google_signup():
     jwt_token = jwt.encode({
         "name": name,
         "email": email,
-        "role": role,
         "picture": picture,
         "expiredAt": exp_timestamp
     }, os.getenv("JWT_SECRET_KEY"), algorithm="HS256")
