@@ -33,8 +33,6 @@ from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Mail, Message
 
 
-
- 
 load_dotenv()  # Load .env file
 
 
@@ -102,7 +100,7 @@ if not os.path.exists(UPLOAD_FOLDER):
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
-app.config['MAIL_SERVER']='live.smtp.mailtrap.io'
+app.config['MAIL_SERVER'] = 'live.smtp.mailtrap.io'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USERNAME'] = 'api'
 app.config['MAIL_PASSWORD'] = 'f37f5a7dbca005542fbdfe1afb4640e6'
@@ -115,6 +113,8 @@ mail = Mail(app)
 s = URLSafeTimedSerializer(app.secret_key)
 
 # Token generator
+
+
 def generate_verification_token(email):
     """
     Generate a verification token for an email.
@@ -122,6 +122,8 @@ def generate_verification_token(email):
     return s.dumps(email, salt="email-confirm")
 
 # Token verifier
+
+
 def confirm_verification_token(token, expiration=3600):
     """
     Confirm the verification token.
@@ -138,9 +140,6 @@ def confirm_verification_token(token, expiration=3600):
     except Exception:
         return None
     return email
-
-
-
 
 
 # Add this to use filesystem-based session storage
@@ -463,7 +462,6 @@ def authorize_github_signup():
         "expiredAt": exp_timestamp
     }, os.getenv("JWT_SECRET_KEY"), algorithm="HS256")
 
-    
     return redirect(f"{dev_frontend_url}/oauth-callback?token={jwt_token}")
 
 
@@ -541,7 +539,8 @@ def company_register():
         return jsonify({"message": "Email already registered"}), 400
 
     # ✅ Hash password before saving
-    hashed_password = bcrypt.generate_password_hash(data.get("password")).decode('utf-8')
+    hashed_password = bcrypt.generate_password_hash(
+        data.get("password")).decode('utf-8')
 
     # ✅ Save company with is_verified=False
     company = {
@@ -561,7 +560,8 @@ def company_register():
 
     # ✅ Send verification email
     subject = "Verify Your Email - DevMetricAI"
-    msg = Message(subject, sender="noreply@yourapp.com", recipients=[email])
+    msg = Message(subject, sender="affansayeed234@gmail.com",
+                  recipients=[email])
     msg.body = f"""
     Hi {data.get("name")},
 
@@ -577,6 +577,7 @@ def company_register():
         "message": "Registration successful. Verification email sent!",
         "company_id": str(result.inserted_id)
     }), 201
+
 
 @app.route("/api/company/verify/<token>")
 def verify_email(token):
@@ -595,6 +596,7 @@ def verify_email(token):
         return jsonify({"message": "Email already verified"}), 200
 
     return jsonify({"message": "Email verified successfully!"}), 200
+
 
 @app.route("/api/company/resend-verification", methods=["POST"])
 def resend_verification():
