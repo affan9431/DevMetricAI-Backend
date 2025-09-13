@@ -608,7 +608,7 @@ def verify_email(token):
         "company": company_data,
         "expiredAt": exp_timestamp
     }
-    token = jwt.encode(payload, os.getenv("SECRET_KEY"), algorithm="HS256")
+    token = jwt.encode(payload, os.getenv("JWT_SECRET_KEY"), algorithm="HS256")
 
     # Redirect to frontend with token and verified flag
 
