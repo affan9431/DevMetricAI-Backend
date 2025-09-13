@@ -560,7 +560,7 @@ def company_register():
 
     # ✅ Send verification email
     subject = "Verify Your Email - DevMetricAI"
-    msg = Message(subject, sender="affansayeed234@gmail.com",
+    msg = Message(subject, sender="smtp@mailtrap.io",
                   recipients=[email])
     msg.body = f"""
     Hi {data.get("name")},
