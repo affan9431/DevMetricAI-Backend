@@ -593,9 +593,28 @@ def verify_email(token):
     )
 
     if result.modified_count == 0:
-        return jsonify({"message": "Email already verified"}), 200
+        # Already verified
+        company_data = companyCollection.find_one({"email": email}, {"_id": 0, "password": 0})
+    else:
+        # Get company data after verification
+        company_data = companyCollection.find_one({"email": email}, {"_id": 0, "password": 0})
 
-    return jsonify({"message": "Email verified successfully!"}), 200
+    exp_time = datetime.utcnow() + timedelta(days=90)
+    exp_timestamp = int(exp_time.timestamp())
+    # Create JWT token
+    payload = {
+        "company": company_data,
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+    }
+    token = jwt.encode(payload, os.getenv("SECRET_KEY"), algorithm="HS256")
+
+    # Redirect to frontend with token and verified flag
+
+     # prod_frontend_url = os.getenv("FRONTEND_URL")
+    dev_frontend_url = "http://localhost:5173"
+
+    frontend_url = f"{dev_frontend_url}/app/company?verified=true&token={token}"
+    return redirect(frontend_url)
 
 
 @app.route("/api/company/resend-verification", methods=["POST"])
