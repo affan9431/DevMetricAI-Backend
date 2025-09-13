@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, url_for, redirect
+from flask import Flask, render_template, request, jsonify, url_for, redirect
 from pymongo import MongoClient
 import pymongo
 import pymupdf
@@ -29,7 +29,12 @@ from datetime import datetime
 from authlib.integrations.flask_client import OAuth
 from urllib.parse import urlencode
 from flask_session import Session
+from itsdangerous import URLSafeTimedSerializer
+from flask_mail import Mail, Message
 
+
+
+ 
 load_dotenv()  # Load .env file
 
 
@@ -96,6 +101,47 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
+
+app.config['MAIL_SERVER']='live.smtp.mailtrap.io'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USERNAME'] = 'api'
+app.config['MAIL_PASSWORD'] = 'f37f5a7dbca005542fbdfe1afb4640e6'
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+
+
+mail = Mail(app)
+
+s = URLSafeTimedSerializer(app.secret_key)
+
+# Token generator
+def generate_verification_token(email):
+    """
+    Generate a verification token for an email.
+    """
+    return s.dumps(email, salt="email-confirm")
+
+# Token verifier
+def confirm_verification_token(token, expiration=3600):
+    """
+    Confirm the verification token.
+
+    Args:
+        token (str): The token to confirm.
+        expiration (int): Time in seconds before token expires. Default = 1 hour.
+
+    Returns:
+        str|None: Email if valid, None if invalid or expired.
+    """
+    try:
+        email = s.loads(token, salt="email-confirm", max_age=expiration)
+    except Exception:
+        return None
+    return email
+
+
+
+
 
 # Add this to use filesystem-based session storage
 app.config['SESSION_TYPE'] = 'filesystem'
@@ -482,6 +528,104 @@ def login():
                        algorithm="HS256",)
 
     return {"success": True, "token": token, "message": "Login successful"}, 201
+
+
+@app.route("/api/company/register", methods=["POST"])
+def company_register():
+    data = request.json
+    email = data.get("email")
+
+    # ✅ Check if company already exists
+    if collection.find_one({"email": email}):
+        return jsonify({"message": "Email already registered"}), 400
+
+    # ✅ Hash password before saving
+    hashed_password = bcrypt.generate_password_hash(data.get("password")).decode('utf-8')
+
+    # ✅ Save company with is_verified=False
+    company = {
+        "name": data.get("name"),
+        "webUri": data.get("webUri"),
+        "email": email,
+        "industryType": data.get("industryType"),
+        "location": data.get("location"),
+        "password": hashed_password,
+        "is_verified": False
+    }
+    result = collection.insert_one(company)
+
+    # ✅ Generate token
+    token = generate_verification_token(email)
+    verify_url = url_for("verify_email", token=token, _external=True)
+
+    # ✅ Send verification email
+    subject = "Verify Your Email - DevMetricAI"
+    msg = Message(subject, sender="noreply@yourapp.com", recipients=[email])
+    msg.body = f"""
+    Hi {data.get("name")},
+
+    Thanks for signing up! Please verify your email by clicking the link below:
+
+    {verify_url}
+
+    This link will expire in 1 hour.
+    """
+    mail.send(msg)
+
+    return jsonify({
+        "message": "Registration successful. Verification email sent!",
+        "company_id": str(result.inserted_id)
+    }), 201
+
+@app.route("/api/company/verify/<token>")
+def verify_email(token):
+    email = confirm_verification_token(token)
+
+    if not email:
+        return jsonify({"message": "Invalid or expired token"}), 400
+
+    # ✅ Update company record
+    result = collection.update_one(
+        {"email": email},
+        {"$set": {"is_verified": True}}
+    )
+
+    if result.modified_count == 0:
+        return jsonify({"message": "Email already verified"}), 200
+
+    return jsonify({"message": "Email verified successfully!"}), 200
+
+@app.route("/api/company/resend-verification", methods=["POST"])
+def resend_verification():
+    data = request.json
+    email = data.get("email")
+
+    company = collection.find_one({"email": email})
+    if not company:
+        return jsonify({"message": "Company not found"}), 404
+
+    if company.get("is_verified"):
+        return jsonify({"message": "Email is already verified"}), 400
+
+    # Generate token again
+    token = generate_verification_token(email)
+    verify_url = url_for("verify_email", token=token, _external=True)
+
+    # Send email
+    subject = "Resend: Verify Your Email - DevMetricAI"
+    msg = Message(subject, sender="noreply@yourapp.com", recipients=[email])
+    msg.body = f"""
+    Hi {company.get("name")},
+
+    Please verify your email again using the link below:
+
+    {verify_url}
+
+    This link will expire in 1 hour.
+    """
+    mail.send(msg)
+
+    return jsonify({"message": "Verification email resent successfully!"}), 200
 
 
 @app.route("/api/upload-resume", methods=["POST"])
