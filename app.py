@@ -321,6 +321,8 @@ def signup_github():
 
 @app.route('/authorize/github/login')
 def authorize_github_login():
+    # prod_frontend_url = os.getenv("FRONTEND_URL")
+    dev_frontend_url = "http://localhost:5173"
     token = github.authorize_access_token()
     resp = github.get('user')
     user_info = resp.json()
@@ -339,12 +341,12 @@ def authorize_github_login():
 
     if not email:
         # 👈 redirect with error
-        return redirect("https://devmetricai.netlify.app/signin?error=github-email")
+        return redirect(f"{dev_frontend_url}/signin?error=github-email")
 
     user = collection.find_one({"email": email})
     if not user:
         # 👈 toast this error on frontend
-        return redirect("https://devmetricai.netlify.app/signin?error=no-account")
+        return redirect(f"{dev_frontend_url}/signin?error=no-account")
 
     exp_time = datetime.utcnow() + timedelta(days=90)
     exp_timestamp = int(exp_time.timestamp())
@@ -354,15 +356,21 @@ def authorize_github_login():
         "email": user.get("email"),
         "role": user.get("role"),
         "picture": user.get("picture"),
+        "location": user.get("location"),
+        "yearOfExperiences": user.get("yearOfExperiences"),
+        "bio": user.get("bio"),
+        "socialLinks": user.get("socialLinks"),
+        "preferredLocation": user.get("preferredLocation"),
         "expiredAt": exp_timestamp
     }, os.getenv("JWT_SECRET_KEY"), algorithm="HS256")
 
-    frontend_url = os.getenv("FRONTEND_URL") or "http://localhost:5173"
-    return redirect(f"{frontend_url}/oauth-callback?token={jwt_token}")
+    return redirect(f"{dev_frontend_url}/oauth-callback?token={jwt_token}")
 
 
 @app.route('/authorize/github/signup')
 def authorize_github_signup():
+    # prod_frontend_url = os.getenv("FRONTEND_URL")
+    dev_frontend_url = "http://localhost:5173"
     token = github.authorize_access_token()
     resp = github.get('user')
     user_info = resp.json()
@@ -370,7 +378,6 @@ def authorize_github_signup():
     email = user_info.get("email")
     name = user_info.get("name") or user_info.get("login")
     avatar = user_info.get("avatar_url")
-    role = "user"
 
     # Fallback to get verified email
     if not email:
@@ -381,16 +388,22 @@ def authorize_github_signup():
                 break
 
     if not email:
-        return redirect("https://devmetricai.netlify.app/signup?error=github-email")
+        return redirect(f"{dev_frontend_url}/signup?error=github-email")
 
     user = collection.find_one({"email": email})
     if not user:
         collection.insert_one({
             "name": name,
             "email": email,
-            "role": role,
+            "role": "",
             "auth_type": "github",
             "picture": avatar
+            "location": "",
+            "preferredLocation": "",
+            "yearOfExperiences": "",
+            "bio": "",
+            "socialLinks": [],
+            "skills": []
         })
 
     exp_time = datetime.utcnow() + timedelta(days=90)
@@ -399,13 +412,12 @@ def authorize_github_signup():
     jwt_token = jwt.encode({
         "name": name,
         "email": email,
-        "role": role,
         "picture": avatar,
         "expiredAt": exp_timestamp
     }, os.getenv("JWT_SECRET_KEY"), algorithm="HS256")
 
-    frontend_url = os.getenv("FRONTEND_URL") or "http://localhost:5173"
-    return redirect(f"{frontend_url}/oauth-callback?token={jwt_token}")
+    
+    return redirect(f"{dev_frontend_url}/oauth-callback?token={jwt_token}")
 
 
 @app.route(f"{USER_API}/signup", methods=["POST"])
