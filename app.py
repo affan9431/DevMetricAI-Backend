@@ -164,6 +164,7 @@ CORS(app, supports_credentials=True, origins=[
 client = MongoClient(os.getenv("MONGODBATLAS_URI"))
 db = client["AiInterview"]
 collection = db["users"]
+companyCollection = db["companies"]
 userResume = db["userResume"]
 extractSkill = db["extractSkill"]
 codeEvaluation = db["codeEvaluation"]
@@ -536,7 +537,7 @@ def company_register():
     email = data.get("email")
 
     # ✅ Check if company already exists
-    if collection.find_one({"email": email}):
+    if companyCollection.find_one({"email": email}):
         return jsonify({"message": "Email already registered"}), 400
 
     # ✅ Hash password before saving
@@ -552,7 +553,7 @@ def company_register():
         "password": hashed_password,
         "is_verified": False
     }
-    result = collection.insert_one(company)
+    result = companyCollection.insert_one(company)
 
     # ✅ Generate token
     token = generate_verification_token(email)
@@ -585,7 +586,7 @@ def verify_email(token):
         return jsonify({"message": "Invalid or expired token"}), 400
 
     # ✅ Update company record
-    result = collection.update_one(
+    result = companyCollection.update_one(
         {"email": email},
         {"$set": {"is_verified": True}}
     )
@@ -600,7 +601,7 @@ def resend_verification():
     data = request.json
     email = data.get("email")
 
-    company = collection.find_one({"email": email})
+    company = companyCollection.find_one({"email": email})
     if not company:
         return jsonify({"message": "Company not found"}), 404
 
