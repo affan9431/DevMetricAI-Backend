@@ -100,10 +100,10 @@ if not os.path.exists(UPLOAD_FOLDER):
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
-app.config['MAIL_SERVER'] = 'live.smtp.mailtrap.io'
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
-app.config['MAIL_USERNAME'] = 'smtp@mailtrap.io'
-app.config['MAIL_PASSWORD'] = 'f37f5a7dbca005542fbdfe1afb4640e6'
+app.config['MAIL_USERNAME'] = 'affansayeed234@gmail.com'
+app.config['MAIL_PASSWORD'] = 'xbrg apde iffy dajo'
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
 
@@ -560,7 +560,7 @@ def company_register():
 
     # ✅ Send verification email
     subject = "Verify Your Email - DevMetricAI"
-    msg = Message(subject, sender="smtp@mailtrap.io",
+    msg = Message(subject, sender="affansayeed234@gmail.com",
                   recipients=[email])
     msg.body = f"""
     Hi {data.get("name")},
