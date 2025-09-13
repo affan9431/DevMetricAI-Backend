@@ -397,7 +397,7 @@ def authorize_github_signup():
             "email": email,
             "role": "",
             "auth_type": "github",
-            "picture": avatar
+            "picture": avatar,
             "location": "",
             "preferredLocation": "",
             "yearOfExperiences": "",
