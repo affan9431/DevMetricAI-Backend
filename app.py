@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, url_for, redirect
+ from flask import Flask, render_template, request, jsonify, url_for, redirect
 from pymongo import MongoClient
 import pymongo
 import pymupdf
@@ -1153,6 +1153,21 @@ def get_leaderboard_data():
 
     leaderboard_data = list(collection.aggregate(pipeline))
     return jsonify({"success": True, "leaderboardData": leaderboard_data})
+
+
+@app.route("/api/users/count", methods=["GET"])
+def get_users_count():
+    count = collection.count_documents({})
+    return jsonify({"count": count})
+
+
+@app.route("/api/users/recent-count", methods=["GET"])
+def get_recent_users_count():
+    seven_days_ago = datetime.utcnow() - timedelta(days=7)
+    count = collection.count_documents({"created_at": {"$gte": seven_days_ago}})
+    return jsonify({"count": count})
+
+
 
 
 if __name__ == '__main__':
