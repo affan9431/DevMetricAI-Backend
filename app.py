@@ -686,7 +686,7 @@ def upload_resume():
         {"email": email, "skills": EXTRACTED_SKILLS, "domain": DOMAIN, "extracted_projects": extracted_projects})
 
     collection.update_one(
-        {"email": email, }, {"$set": {"skills": EXTRACTED_SKILLS, "created_at": current_time}})
+        - {"email": email, }, {"$set": {"skills": EXTRACTED_SKILLS, "created_at": current_time}})
 
     question = generate_coding_question()
     os.remove(filepath)
@@ -1164,7 +1164,8 @@ def get_users_count():
 @app.route("/api/users/recent-count", methods=["GET"])
 def get_recent_users_count():
     seven_days_ago = datetime.utcnow() - timedelta(days=7)
-    count = collection.count_documents({"created_at": {"$gte": seven_days_ago}})
+    count = collection.count_documents(
+        {"created_at": {"$gte": seven_days_ago}})
     return jsonify({"count": count})
 
 
