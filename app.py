@@ -1173,30 +1173,33 @@ def get_recent_users_count():
 @app.route("/api/job-postings", methods=["POST"])
 def create_job_posting():
     data = request.json
-    print(data)
     company_email = data.get("email")
 
     # Verify company exists and is verified
     company = companyCollection.find_one(
-        {"email": company_email, "is_verified": True})
+        {"email": company_email, "is_verified": True}
+    )
     if not company:
         return jsonify({"error": "Company not found or not verified"}), 404
 
-    # job_posting = {
-    #     "company_email": company_email,
-    #     "company_name": company.get("name"),
-    #     "title": data.get("title"),
-    #     "description": data.get("description"),
-    #     "location": data.get("location"),
-    #     "job_type": data.get("job_type"),
-    #     "skills_required": data.get("skills_required"),
-    #     "created_at": datetime.utcnow()
-    # }
+    # Add company name and created_at to the job post data
+    job_posting = {
+        **data,
+        "created_at": current_time
+    }
 
-    # result = jobPostings.insert_one(job_posting)
-    # return jsonify({"message": "Job posting created", "job_id": str(result.inserted_id)}), 201
-    return jsonify({"message": "Job posting created"}), 201
+    result = jobPostings.insert_one(job_posting)
+
+    return jsonify({
+        "message": "Job posting created",
+        "job_id": str(result.inserted_id)
+    }), 201
+
 
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=port)
+
+
+
+# {'jobBasicForm': {'jobTitle': 'Full Stack Web Developer', 'department': 'Information Technology', 'location': 'Jaipur', 'employment': 'Full-time'}, 'jobDetailForm': {'jobDesc': 'hgfhhhjf', 'yearsOfExperience': '3', 'responsibilities': ['iiuuyuu', 'eereew']}, 'skillAndRequirenmentForm': {'selectedSkills': ['React.js', 'Three.js'], 'selectedLanguages': ['Korean']}, 'compensationAndPerksForm': {'salaryRange': '5', 'perks': ['Health Insurance', 'Paid Time Off', 'Remote Work Flexibility', 'Performance Bonus']}, 'applicationSettingForm': {'applicationDeadline': '2025-10-03', 'howToApply': {'method': 'email', 'value': 'affansayeed234@gmail.com'}}, 'email': 'sayeedaffan544@gmail.com'}
