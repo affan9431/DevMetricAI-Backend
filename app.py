@@ -171,6 +171,7 @@ subscriptions = db["subscriptions"]
 contactData = db["contact"]
 reviewData = db["review"]
 userCredits = db["userCredits"]
+jobPostings = db["jobPostings"]
 
 google = oauth.register(
     name='google',
@@ -615,7 +616,7 @@ def verify_email(token):
     # prod_frontend_url = os.getenv("FRONTEND_URL")
     dev_frontend_url = "http://localhost:5173"
 
-    frontend_url = f"{dev_frontend_url}/app/company?verified=true&token={token}"
+    frontend_url = f"{dev_frontend_url}/company?verified=true&token={token}"
     return redirect(frontend_url)
 
 
@@ -1167,6 +1168,34 @@ def get_recent_users_count():
     count = collection.count_documents(
         {"created_at": {"$gte": seven_days_ago}})
     return jsonify({"count": count})
+
+
+@app.route("/api/job-postings", methods=["POST"])
+def create_job_posting():
+    data = request.json
+    print(data)
+    company_email = data.get("email")
+
+    # Verify company exists and is verified
+    company = companyCollection.find_one(
+        {"email": company_email, "is_verified": True})
+    if not company:
+        return jsonify({"error": "Company not found or not verified"}), 404
+
+    # job_posting = {
+    #     "company_email": company_email,
+    #     "company_name": company.get("name"),
+    #     "title": data.get("title"),
+    #     "description": data.get("description"),
+    #     "location": data.get("location"),
+    #     "job_type": data.get("job_type"),
+    #     "skills_required": data.get("skills_required"),
+    #     "created_at": datetime.utcnow()
+    # }
+
+    # result = jobPostings.insert_one(job_posting)
+    # return jsonify({"message": "Job posting created", "job_id": str(result.inserted_id)}), 201
+    return jsonify({"message": "Job posting created"}), 201
 
 
 if __name__ == '__main__':
