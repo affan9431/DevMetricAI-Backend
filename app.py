@@ -226,8 +226,8 @@ def signup_google():
 
 @app.route('/authorize/google/login')
 def authorize_google_login():
-    # prod_frontend_url = os.getenv("FRONTEND_URL")
-    dev_frontend_url = "http://localhost:5173"
+    prod_frontend_url = os.getenv("FRONTEND_URL")
+    # dev_frontend_url = "http://localhost:5173"
     token = google.authorize_access_token()
     resp = google.get('userinfo')
     user_info = resp.json()
@@ -237,7 +237,7 @@ def authorize_google_login():
     user = collection.find_one({"email": email})
     if not user:
         error_params = urlencode({"error": "no_account"})
-        return redirect(f"{dev_frontend_url}/signin?{error_params}")
+        return redirect(f"{prod_frontend_url}/signin?{error_params}")
 
     exp_time = datetime.utcnow() + timedelta(days=90)
     exp_timestamp = int(exp_time.timestamp())
@@ -256,7 +256,7 @@ def authorize_google_login():
     }, os.getenv("JWT_SECRET_KEY"), algorithm="HS256")
 
     params = urlencode({"login_token": jwt_token})
-    return redirect(f"{dev_frontend_url}/oauth-callback?{params}")
+    return redirect(f"{prod_frontend_url}/oauth-callback?{params}")
 
 
 @app.route('/authorize/google/signup')
@@ -295,10 +295,10 @@ def authorize_google_signup():
         "expiredAt": exp_timestamp
     }, os.getenv("JWT_SECRET_KEY"), algorithm="HS256")
 
-    # prod_frontend_url = os.getenv("FRONTEND_URL")
-    dev_frontend_url = "http://localhost:5173"
+    prod_frontend_url = os.getenv("FRONTEND_URL")
+    # dev_frontend_url = "http://localhost:5173"
     params = urlencode({"token": jwt_token})
-    return redirect(f"{dev_frontend_url}/oauth-callback?{params}")
+    return redirect(f"{prod_frontend_url}/oauth-callback?{params}")
 
 
 @app.route("/api/complete-profile", methods=["POST"])
@@ -368,8 +368,8 @@ def signup_github():
 
 @app.route('/authorize/github/login')
 def authorize_github_login():
-    # prod_frontend_url = os.getenv("FRONTEND_URL")
-    dev_frontend_url = "http://localhost:5173"
+    prod_frontend_url = os.getenv("FRONTEND_URL")
+    # dev_frontend_url = "http://localhost:5173"
     token = github.authorize_access_token()
     resp = github.get('user')
     user_info = resp.json()
@@ -388,12 +388,12 @@ def authorize_github_login():
 
     if not email:
         # 👈 redirect with error
-        return redirect(f"{dev_frontend_url}/signin?error=github-email")
+        return redirect(f"{prod_frontend_url}/signin?error=github-email")
 
     user = collection.find_one({"email": email})
     if not user:
         # 👈 toast this error on frontend
-        return redirect(f"{dev_frontend_url}/signin?error=no-account")
+        return redirect(f"{prod_frontend_url}/signin?error=no-account")
 
     exp_time = datetime.utcnow() + timedelta(days=90)
     exp_timestamp = int(exp_time.timestamp())
@@ -411,13 +411,13 @@ def authorize_github_login():
         "expiredAt": exp_timestamp
     }, os.getenv("JWT_SECRET_KEY"), algorithm="HS256")
 
-    return redirect(f"{dev_frontend_url}/oauth-callback?login_token={jwt_token}")
+    return redirect(f"{prod_frontend_url}/oauth-callback?login_token={jwt_token}")
 
 
 @app.route('/authorize/github/signup')
 def authorize_github_signup():
-    # prod_frontend_url = os.getenv("FRONTEND_URL")
-    dev_frontend_url = "http://localhost:5173"
+    prod_frontend_url = os.getenv("FRONTEND_URL")
+    # dev_frontend_url = "http://localhost:5173"
     token = github.authorize_access_token()
     resp = github.get('user')
     user_info = resp.json()
@@ -435,7 +435,7 @@ def authorize_github_signup():
                 break
 
     if not email:
-        return redirect(f"{dev_frontend_url}/signup?error=github-email")
+        return redirect(f"{prod_frontend_url}/signup?error=github-email")
 
     user = collection.find_one({"email": email})
     if not user:
@@ -463,7 +463,7 @@ def authorize_github_signup():
         "expiredAt": exp_timestamp
     }, os.getenv("JWT_SECRET_KEY"), algorithm="HS256")
 
-    return redirect(f"{dev_frontend_url}/oauth-callback?token={jwt_token}")
+    return redirect(f"{prod_frontend_url}/oauth-callback?token={jwt_token}")
 
 
 @app.route(f"{USER_API}/signup", methods=["POST"])
@@ -613,10 +613,10 @@ def verify_email(token):
 
     # Redirect to frontend with token and verified flag
 
-    # prod_frontend_url = os.getenv("FRONTEND_URL")
-    dev_frontend_url = "http://localhost:5173"
+    prod_frontend_url = os.getenv("FRONTEND_URL")
+    # dev_frontend_url = "http://localhost:5173"
 
-    frontend_url = f"{dev_frontend_url}/company?verified=true&token={token}"
+    frontend_url = f"{prod_frontend_url}/company?verified=true&token={token}"
     return redirect(frontend_url)
 
 
