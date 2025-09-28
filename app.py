@@ -1196,6 +1196,16 @@ def create_job_posting():
     }), 201
 
 
+@app.route("/api/get/job-posting", methods=["GET"])
+def get_job_postings():
+    data = jobPostings.find()
+    result = []
+    for doc in data:
+        doc["_id"] = str(doc["_id"])
+        result.append(doc)
+    return jsonify({"jobPostings": result})
+
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=port)
