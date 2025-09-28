@@ -687,7 +687,7 @@ def upload_resume():
         {"email": email, "skills": EXTRACTED_SKILLS, "domain": DOMAIN, "extracted_projects": extracted_projects})
 
     collection.update_one(
-        - {"email": email, }, {"$set": {"skills": EXTRACTED_SKILLS, "created_at": current_time}})
+         {"email": email, }, {"$set": {"skills": EXTRACTED_SKILLS, "created_at": current_time}})
 
     question = generate_coding_question()
     os.remove(filepath)
