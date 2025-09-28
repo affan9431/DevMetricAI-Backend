@@ -1206,6 +1206,18 @@ def get_job_postings():
     return jsonify({"jobPostings": result})
 
 
+@app.route("/api/get/job-posting/<id>", methods=["GET"])
+def get_job_posting_by_id(id):
+    try:
+        job = jobPostings.find_one({"_id": ObjectId(id)})
+        if not job:
+            return jsonify({"error": "Job not found"}), 404
+        job["_id"] = str(job["_id"])
+        return jsonify(job)
+    except Exception as e:
+        return jsonify({"error": "Invalid ID"}), 400
+
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=port)
