@@ -53,7 +53,7 @@ text = ["some_text"]
 
 def generate_coding_question():
     response = client.models.generate_content(
-        model="gemini-1.5-flash-lite",
+        model="gemini-1.5-flash",
         contents=f"""Generate 5 new FAANG-level DSA coding questions (easy, medium, hard).
         Return JSON like this structure: {problems},
         but do NOT repeat these exact questions. Only create new ones."""
@@ -119,7 +119,7 @@ def generate_interview_question(answer: str, extracted_skills: list, domain: str
         """
 
         response = client.models.generate_content(
-            model="gemini-1.5-flash-lite",
+            model="gemini-1.5-flash",
             contents=prompt
         )
 
@@ -158,7 +158,7 @@ def generate_interview_question(answer: str, extracted_skills: list, domain: str
 
 def predict_domain_based_on_skills(skills):
     response = client.models.generate_content(
-        model="gemini-1.5-flash-lite",
+        model="gemini-1.5-flash",
         contents=f"Predict the software engineer domain based on: {skills}. Return only one short title like 'Full Stack Developer' or 'AI Engineer'."
     )
     return response.text
@@ -166,7 +166,7 @@ def predict_domain_based_on_skills(skills):
 
 def predict_user_strength_and_weakness(data):
     response = client.models.generate_content(
-        model="gemini-1.5-flash-lite",
+        model="gemini-1.5-flash",
         contents=f"""
         Analyze the user data: {data}.
         Identify 3 strengths and 3 weaknesses.
@@ -193,7 +193,7 @@ def predict_user_strength_and_weakness(data):
 
 def generate_aptitude_and_reasoning_questions():
     response = client.models.generate_content(
-        model="gemini-1.5-flash-lite",
+        model="gemini-1.5-flash",
         contents=(
             "Generate 25 aptitude and reasoning questions (easy, medium, hard). "
             "Provide in JSON array format [{id, question, options, answer}]. "
