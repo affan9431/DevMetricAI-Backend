@@ -574,10 +574,29 @@ def company_register():
     # """
     # mail.send(msg)
 
+    exp_time = datetime.utcnow() + timedelta(days=90)
+    exp_timestamp = int(exp_time.timestamp())
+
+    token = jwt.encode(
+        {
+            "name": company["name"],
+            "email": email,
+            "webUri": company["webUri"],
+            "industryType": company["industryType"],
+            "location": company["location"],
+            "role": "company",
+            "expiredAt": exp_timestamp.timestamp()
+        },
+        os.getenv("JWT_SECRET_KEY"),
+        algorithm="HS256",
+    )
+
     return jsonify({
         "message": "Registration successful. Verification email sent!",
-        "company_id": str(result.inserted_id)
+        "company_id": str(result.inserted_id),
+        "token": token
     }), 201
+
 
 
 @app.route("/api/company/verify/<token>")
