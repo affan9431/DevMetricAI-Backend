@@ -555,24 +555,24 @@ def company_register():
     }
     result = companyCollection.insert_one(company)
 
-    # ✅ Generate token
-    token = generate_verification_token(email)
-    verify_url = url_for("verify_email", token=token, _external=True)
+    # # ✅ Generate token
+    # token = generate_verification_token(email)
+    # verify_url = url_for("verify_email", token=token, _external=True)
 
-    # ✅ Send verification email
-    subject = "Verify Your Email - DevMetricAI"
-    msg = Message(subject, sender="affansayeed234@gmail.com",
-                  recipients=[email])
-    msg.body = f"""
-    Hi {data.get("name")},
+    # # ✅ Send verification email
+    # subject = "Verify Your Email - DevMetricAI"
+    # msg = Message(subject, sender="affansayeed234@gmail.com",
+    #               recipients=[email])
+    # msg.body = f"""
+    # Hi {data.get("name")},
 
-    Thanks for signing up! Please verify your email by clicking the link below:
+    # Thanks for signing up! Please verify your email by clicking the link below:
 
-    {verify_url}
+    # {verify_url}
 
-    This link will expire in 1 hour.
-    """
-    mail.send(msg)
+    # This link will expire in 1 hour.
+    # """
+    # mail.send(msg)
 
     return jsonify({
         "message": "Registration successful. Verification email sent!",
