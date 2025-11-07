@@ -585,7 +585,7 @@ def company_register():
             "industryType": company["industryType"],
             "location": company["location"],
             "role": "company",
-            "expiredAt": exp_timestamp.timestamp()
+            "expiredAt": exp_timestamp
         },
         os.getenv("JWT_SECRET_KEY"),
         algorithm="HS256",
