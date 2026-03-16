@@ -1,7 +1,10 @@
 from typing import List, Dict, Tuple
 from google import genai
+import os
 
-client = genai.Client(api_key="AIzaSyCtjhDfhJFB_qiFBF1VgzRcCmbnIHxOBzw")
+client = genai.Client(api_key=os.environ.get("GOOGLE_GEMINI_API_KEY"))
+
+model = "gemini-2.0-flash"
 
 problems = [
     {
@@ -37,7 +40,7 @@ aptitude_problem = [
         "answer": "4",
     },
     {
-        id: 2,
+        "id": 2,
         "question": "The average of 10, 20, 30 is?",
         "options": ["15", "20", "25", "30"],
         "answer": "20",
@@ -55,7 +58,7 @@ text = ["some_text"]
 
 def generate_coding_question():
     response = client.models.generate_content(
-        model="gemini-2.0-flash", contents=f"""Generate 5 new FAANG-level DSA coding questions(easy, medium, hard).
+        model=model, contents=f"""Generate 5 new FAANG-level DSA coding questions(easy, medium, hard).
         Return JSON like this structure: {problems},
         but do NOT repeat these exact questions. Only create new ones."""
     )
@@ -64,7 +67,7 @@ def generate_coding_question():
 
 def evaluate_user_code(allCode):
     response = client.models.generate_content(
-        model="gemini-2.0-flash",
+        model=model,
         contents=(
             f"Evaluate the following code snippet thoroughly based on:\n"
             f"- **Correctness** (Does it function as expected?)\n"
@@ -130,7 +133,7 @@ def generate_interview_question(answer: str, extracted_skills: list, domain: str
 
         # Generate response using Gemini API
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model=model,
             contents=prompt
         )
 
@@ -167,7 +170,7 @@ def generate_interview_question(answer: str, extracted_skills: list, domain: str
         """
 
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model=model,
             contents=score_prompt
         )
 
@@ -176,7 +179,7 @@ def generate_interview_question(answer: str, extracted_skills: list, domain: str
 
 def predict_domain_based_on_skills(skills):
     response = client.models.generate_content(
-        model="gemini-2.0-flash",
+        model=model,
         contents=f"Predict the domain of a software engineer based on the following skills: {skills} and return in one word like Full Stack web developer, Machine Laerning Developer and so on."
     )
     return response.text
@@ -184,7 +187,7 @@ def predict_domain_based_on_skills(skills):
 
 def predict_user_strength_and_weakness(data):
     response = client.models.generate_content(
-        model="gemini-2.0-flash",
+        model=model,
         contents=f"""
         Analyze the following user data: {data}. Identify exactly three strengths and three weaknesses based on coding scores, interview performance, and other relevant factors.
 
@@ -212,7 +215,7 @@ def predict_user_strength_and_weakness(data):
 
 def generate_aptitude_and_reasoning_questions():
     response = client.models.generate_content(
-        model="gemini-2.0-flash",
+        model=model,
         contents=(
             "Generate 25 aptitude and reasoning questions ranging from easy, medium, to hard "
             "at FAANG interview style. "
