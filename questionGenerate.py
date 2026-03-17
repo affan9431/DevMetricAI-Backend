@@ -2,7 +2,9 @@ from typing import List, Dict, Tuple
 from google import genai
 import os
 
-client = genai.Client(api_key=os.environ.get("GOOGLE_GEMINI_API_KEY"))
+API_KEY = os.environ.get("GOOGLE_GEMINI_API_KEY")
+
+client = genai.Client(api_key=API_KEY)
 
 model = "gemini-2.0-flash"
 
