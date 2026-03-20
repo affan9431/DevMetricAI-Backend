@@ -1,7 +1,5 @@
 from flask import Flask, render_template, request, jsonify, url_for, redirect
 from pymongo import MongoClient
-import pymongo
-import pymupdf
 import os
 from dotenv import load_dotenv
 import jwt
@@ -77,7 +75,12 @@ def extract_projects(text):
     return projects
 
 
-nlp = spacy.load("en_core_web_sm")
+try:
+    nlp = spacy.load("en_core_web_sm")
+except:
+    import os
+    os.system("python -m spacy download en_core_web_sm")
+    nlp = spacy.load("en_core_web_sm")
 
 matcher = PhraseMatcher(nlp.vocab)
 patterns = [nlp(skill) for skill in skills_list]
